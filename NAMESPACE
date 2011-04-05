@@ -1,0 +1,9 @@
+import(grid)
+
+export(corLinkcommCentrality, cutDendrogramAt, getAllNestedComm, getClusterRelatedness, getCommunityCentrality, getCommunityConnectedness, getCommunityMatrix, getLinkCommunities, getLinkCommDensities, getNestedHierarchies, getNodesIn, layout.spencer.circle, linkcomm2cytoscape, newLinkCommsAt, newLinkCommsAt, orderCommunities, plotLinkCommDend, plotLinkCommGraph, plotLinkCommMembers, plotLinkCommSummComm, plotLinkCommSumm)
+
+S3method(plot, linkcomm)
+S3method(print, linkcomm)
+
+useDynLib(linkcomm, getEdgeSimilarities, hclustLinkComm, hclustPlotOrder, getLinkDensities, cutTreeAt, getJaccards)
+

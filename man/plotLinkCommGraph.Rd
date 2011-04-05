@@ -1,0 +1,117 @@
+\name{plotLinkCommGraph}
+\alias{plotLinkCommGraph}
+
+\title{
+Plot a Graph Layout of Link Communities
+}
+\description{
+This function is called by \code{plot.linkcomm} to plot a graph layout of the link communities.
+}
+\usage{
+plotLinkCommGraph(x, clusterids = 1:length(x$clusters), nodes = NULL, 
+        layout = layout.fruchterman.reingold, pal = brewer.pal(7, "Set2"), 
+        random = TRUE, vshape = "none", margin = 0, vertex.label.cex = 0.8, 
+        jitter = 0.2, circle = TRUE, printids = TRUE, cid.cex = 1, 
+        shownodesin = 0, showall = FALSE, verbose = TRUE, ...)
+}
+
+\arguments{
+  \item{x}{
+An object of class \code{linkcomm}.
+}
+  \item{clusterids}{
+An integer vector of community IDs. Defaults to all communities.
+}
+  \item{nodes}{
+A character vector naming the nodes to be plotted. If NULL, then community IDs are used instead. Defaults to NULL.
+}
+  \item{layout}{
+A character string or function identifying the layout algorithm to be used for positioning nodes in the graph. Deafualts to \code{layout.fruchterman.reingold}. See details for alternative layouts.
+}
+  \item{pal}{
+A character vector describing a colour palette to be used for colouring the link communities in the graph. Defaults to \code{brewer.pal(7, "Set2")}.
+}
+  \item{random}{
+Logical, whether to randomise the link colours. Defaults to TRUE.
+}
+  \item{vshape}{
+A character string specifying the shape of the nodes. Can be one of \code{"none"}, \code{"circle"}, \code{"square"}, \code{"csquare"}, \code{"rectangle"}, \code{"crectangle"}, and \code{"vrectangle"}. Defaults to \code{"none"}.
+}
+  \item{margin}{
+A numerical value specifying the amount of empty space around the graph. Negative values will zoom into the graph. Defaults to 0.
+}
+  \item{vertex.label.cex}{
+A numerical value specifying the size of node labels. Defaults to 0.8.
+}
+  \item{jitter}{
+A numerical value specifying the range (negative to positive) of random noise that will be added to nodes that have identical x-y coordinates. Defaults to 0.2. Only used for Spencer circle layouts.
+}
+  \item{circle}{
+Logical, whether to display a circle for a Spencer circle layout. Defaults to TRUE.
+}
+  \item{printids}{
+Logical, whether to display community IDs at their anchor points around the Spencer circle. Defaults to TRUE.
+}
+  \item{cid.cex}{
+A numerical value specifying the size of community IDs around the Spencer circle. Defaults to 1.
+}
+  \item{shownodesin}{
+An integer value specifying the number of communities a node must belong to before it will be displayed. If 0 then all nodes are displayed. Defaults to 0.
+}
+  \item{showall}{
+Logical, whether to display all links in the network regardless of whether they belong to communities or not. Defaults to FALSE.
+}
+  \item{verbose}{
+Logical, whether to print the progress of the calculation to the screen. Defaults to TRUE.
+}
+  \item{\dots}{
+Additional arguments to be passed to \code{plot}.
+}
+}
+\details{
+Here we describe the parameters for plotting link community graphs using:\cr
+\code{plot(x, type = "graph", layout = layout)}\cr\cr
+Various graph layouts are available:
+\enumerate{
+\item \code{"spencer.circle"}
+\item \code{layout.random}
+\item \code{layout.circle}
+\item \code{layout.sphere}
+\item \code{layout.fruchterman.reingold}
+\item \code{layout.kamada.kawai}
+\item \code{layout.spring}
+\item \code{layout.reingold.tilford}
+\item \code{layout.fruchterman.reingold.grid}
+\item \code{layout.lgl}
+\item \code{layout.graphopt}
+\item \code{layout.mds}
+\item \code{layout.svd}
+\item \code{layout.norm}
+}
+All of these, except the \code{"spencer.circle"}, are described in more detail in the \code{\link{igraph}} package. The \code{"spencer.circle"} is described in \code{\link{layout.spencer.circle}}.
+}
+\value{
+A graph plot.
+}
+\references{
+%% ~put references to the literature/web site here ~
+}
+\author{
+Alex T. Kalinka \email{alex.t.kalinka@gmail.com}
+}
+
+\seealso{
+\code{\link{plot.linkcomm}}, \code{\link{layout.spencer.circle}}, \code{\link{igraph.plotting}}
+}
+\examples{
+## Generate graph and extract link communities.
+g <- swiss[,3:4]
+lc <- getLinkCommunities(g)
+
+## Plot a graph of link communities.
+plot(lc, type = "graph")
+
+## Plot a graph of link communities using a Spencer circle layout.
+plot(lc, type = "graph", layout = "spencer.circle")
+}
+
