@@ -25,10 +25,10 @@ using namespace std;
 void getLinkDensities(int *ma, int *mb, int *ea, int *eb, int *numedg, int *clusnums, double *pdens, double *heights, double *pdmax, int *csize, bool *removetrivial)
 
 	{
-	
+
 	int i, j, k, p = 0, ne, nn, count = 0, csum = clusnums[0];
 	float prog;
-	double ldens, maxp, best;
+	double ldens, maxp, best = 0;
 	vector<int> mergeA;
 	vector<int> mergeB;
 	vector<int> edgeA;

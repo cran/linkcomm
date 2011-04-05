@@ -81,5 +81,12 @@ lc <- getLinkCommunities(g, edglim = 10)
 
 ## Directed network.
 lc <- getLinkCommunities(g, directed = TRUE, dirweight = 0.8)
+
+## Weighted network.
+g <- cbind(swiss[,3:4], runif(nrow(swiss[,3:4])))
+lc <- getLinkCommunities(g)
+
+## Directed and weighted network.
+lc <- getLinkCommunities(g, directed = TRUE, dirweight = 0.8)
 }
 

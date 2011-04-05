@@ -161,7 +161,7 @@ void getEdgeSimilarities(int *ea, int *eb, int *numedg, int *rowlen, double *wei
 
 	{
 
-	int i, j, k, finda, findab, findb, findba, add, which;
+	int i, j, finda, findab, findb, findba, add, which;
 	int first = -1, last = -1, sum = 0, runn = 0;
 	double dotprod, absA, absB;
 	float prog;
@@ -196,12 +196,14 @@ void getEdgeSimilarities(int *ea, int *eb, int *numedg, int *rowlen, double *wei
 	remove("linkcomm_diss.txt");
 
 	ofstream outfile;
-	outfile.open("linkcomm_diss.txt", ios::out);
-	if(! outfile.is_open()){
-			Rprintf("\nERROR: can't open linkcomm_diss.txt!\n"); return;
-			}
+	if(*disk){
+		outfile.open("linkcomm_diss.txt", ios::out);
+		if(! outfile.is_open()){
+				Rprintf("\nERROR: can't open linkcomm_diss.txt!\n"); return;
+				}
 
-	outfile.precision(7);
+		outfile.precision(7);
+		}
 
 	// Loop through edges and calculate edge similarities.
 	for(i = 0; i < *numedg-1; i++){
@@ -470,7 +472,9 @@ void getEdgeSimilarities(int *ea, int *eb, int *numedg, int *rowlen, double *wei
 
 		}
 
-	outfile.close();	
+	if(*disk){
+		outfile.close();
+		}
 
 	}
 

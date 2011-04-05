@@ -126,9 +126,9 @@ void hclustLinkComm(int *numedg, int *rowlen, float *heights, int *hca, int *hcb
 		ss.clear();
 		}
 
+	infile.close();	
 	remove("linkcomm_diss.txt");
 
-	infile.close();
 	outfile.close();
 
 	/* There are (numedg-1) agglomerations carried out. 
@@ -543,11 +543,14 @@ void hclustLinkComm(int *numedg, int *rowlen, float *heights, int *hca, int *hcb
 		oldrow.clear();
 		oldcol.clear();
 
+		infile.close();
+		remove("linkcomm_diss");
+
+		outfile.close();
+
 		if(rename("temp", "linkcomm_diss") != 0){
 			Rprintf("\nERROR: temp could not be renamed to linkcomm_diss!\n"); return;
 			}
-		infile.close();
-		outfile.close();
 
 
 		}

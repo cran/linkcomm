@@ -86,7 +86,7 @@ getLinkCommunities <- function(x, plot = TRUE, hcmethod = "average", edglim = 10
 	
 	# Switch depending on size of network.
 	if(len <= edglim){
-		disk = FALSE
+		disk <- FALSE
 		emptyvec <- rep(1,(len*(len-1))/2)
 		if(length(wt)>1){ weighted <- TRUE}else{ wt <- 0; weighted <- FALSE}
 		dissvec <- .C("getEdgeSimilarities",as.integer(edges[,1]),as.integer(edges[,2]),as.integer(len),rowlen=integer(1),weights=as.double(wt),as.logical(directed),as.double(dirweight),as.logical(weighted),as.logical(disk), dissvec = as.double(emptyvec))$dissvec
@@ -102,7 +102,7 @@ getLinkCommunities <- function(x, plot = TRUE, hcmethod = "average", edglim = 10
 		cat("\n")
 		#return(hcedges)
 	}else{
-		disk = TRUE
+		disk <- TRUE
 		if(length(wt)>1){ weighted <- TRUE}else{ wt <- 0; weighted <- FALSE}
 		rowlen <- .C("getEdgeSimilarities",as.integer(edges[,1]),as.integer(edges[,2]),as.integer(len),rowlen=integer(len-1),weights=as.double(wt),as.logical(directed),as.double(dirweight),as.logical(weighted),as.logical(disk), dissvec = double(1))$rowlen
 		#return(rowlen)
