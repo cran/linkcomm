@@ -10,7 +10,7 @@ This function extracts meta-communities from a dendrogram of community relatedne
 \usage{
 cutDendrogramAt(x, lc = NULL, cutat = NULL, plot = TRUE, col = TRUE, 
                 pal = brewer.pal(9, "Set1"), labels = FALSE, plotcut = TRUE, 
-                right = TRUE, ...)
+                right = TRUE, verbose = TRUE, ...)
 }
 
 \arguments{
@@ -40,6 +40,9 @@ Logical, whether to display a horizontal line where the dendrogram is cut. Defau
 }
   \item{right}{
 Logical, whether to orient the dendrogram to the right. Defaults to TRUE.
+}
+  \item{verbose}{
+Logical, whether to display the progress of colouring the dendrogram. Defaults to TRUE.
 }
   \item{\dots}{
 Additional arguments to be passed to \code{plot}.

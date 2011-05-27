@@ -77,7 +77,7 @@ void compressRow(vector<float> &v)
 	}
 
 
-void hclustLinkComm(int *numedg, int *rowlen, float *heights, int *hca, int *hcb, bool *carriageret)
+void hclustLinkComm(int *numedg, int *rowlen, float *heights, int *hca, int *hcb, bool *carriageret, bool *verbose)
 	{
 	
 	int row, col, numM = 0, numedgU = *numedg, perc = 0;
@@ -135,23 +135,25 @@ void hclustLinkComm(int *numedg, int *rowlen, float *heights, int *hca, int *hcb
 	 * Ties in independent pairs are merged simultaneously. 
 	 * Ties in the same pairs are agglomerated according to their order in the diss matrix. */
 	while(numM < *numedg-1){
-		
-		prog = (numM+0.0)/(*numedg-2)*100;
 
-		if(*carriageret){
-			Rprintf("   Hierarchical clustering of edges... %3.2f%\r",prog);
-		}else{
-			if(numM == 0){
-				Rprintf("   Hierarchical clustering of edges...\r\n");
+		if(*verbose){		
+			prog = (numM+0.0)/(*numedg-2)*100;
+
+			if(*carriageret){
+				Rprintf("   Hierarchical clustering of edges... %3.2f%\r",prog);
+			}else{
+				if(numM == 0){
+					Rprintf("   Hierarchical clustering of edges...\r\n");
+					}
+				if(prog >= perc){
+					Rprintf("|");
+					perc++;
+					}
 				}
-			if(prog >= perc){
-				Rprintf("|");
-				perc++;
-				}
+
+			R_FlushConsole();
+			R_ProcessEvents();
 			}
-
-		R_FlushConsole();
-		R_ProcessEvents();
 
 		best = 2.0; k = 0;
 		row = 0; col = 0;

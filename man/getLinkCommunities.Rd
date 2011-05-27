@@ -8,16 +8,14 @@ Extract Link Communities from a Network
 This function extracts link communities from networks of arbitrary size and type.
 }
 \usage{
-getLinkCommunities(x, plot = TRUE, hcmethod = "average", edglim = 10^4, 
-                   directed = FALSE, dirweight = 0.5, removetrivial = TRUE)
+getLinkCommunities(x, hcmethod = "average", edglim = 10^4, 
+                   directed = FALSE, dirweight = 0.5, plot = TRUE, 
+                   removetrivial = TRUE, verbose = TRUE)
 }
 
 \arguments{
   \item{x}{
 An edge list, which is a matrix or data frame with 2 or 3 columns. The first 2 columns contain the nodes that interact with each other, which can be character strings or integer values. The optional third column is a numerical vector of weights for each edge.
-}
-  \item{plot}{
-Logical, whether to plot summary output from the algorithm (dendrogram and partition density plot). Defaults to TRUE.
 }
   \item{hcmethod}{
 A character string naming the hierarchical clustering method to use. Can be one of \code{"ward"}, \code{"single"}, \code{"complete"}, \code{"average"}, \code{"mcquitty"}, \code{"median"}, or \code{"centroid"}. Defaults to \code{"average"} (if the number of edges is greater than \code{edglim} then \code{"single"} is used).
@@ -31,8 +29,14 @@ Logical, whether the network is directed. Defaults to FALSE.
   \item{dirweight}{
 A numerical value between 1 and 0 inclusive indicating the weight that will be attached to edges that share a node but are in the opposite orientation. Defaults to 0.5. Will be ignored if \code{directed} = FALSE.
 }
+  \item{plot}{
+Logical, whether to plot summary output from the algorithm (dendrogram and partition density plot). Defaults to TRUE.
+}
   \item{removetrivial}{
 Logical, whether to remove trivial community clusters that contain 2 edges. Defaults to TRUE.
+}
+  \item{verbose}{
+Logical, whether to display the progress of the algorithm on the screen. Defaults to TRUE.
 }
 }
 \details{
@@ -67,7 +71,7 @@ Kalinka, A.T. and Tomancak, P. (2011). linkcomm: an R package for the generation
 Alex T. Kalinka \email{alex.t.kalinka@gmail.com}
 }
 \note{
-When the number of links is less than \code{edglim} the hierarchical clustering will be handled in memory. Above this value the upper triangular dissimilarity matrix will be compressed and written to disk and read and written as clustering proceeds until the file size is 0 bytes using a compiled C++ function. In this case the hierarchical clustering method will always be \code{"single"} to enhance performance for large networks. The size of \code{edglim} can be modified to suit the computer resources available to the user. As a guide, a network with \eqn{10^{4}} links will require \eqn{((10^{4})^{2})*8 = 800} MB to be handled in an uncompressed format in the memory.\cr\cr
+When the number of links is less than \code{edglim} the hierarchical clustering will be handled in memory. Above this value the upper triangular dissimilarity matrix will be compressed and written to disk and read and written as clustering proceeds until the file size is 0 bytes using a compiled C++ function. In this case the hierarchical clustering method will always be \code{"single"} to enhance performance for large networks. The size of \code{edglim} can be modified to suit the computer resources available to the user. As a guide, a network with \eqn{10^{4}} links will require \eqn{((10^{4})^{2})*8 = 800} MB to be handled in an uncompressed format in the memory.\cr\cr\cr
 For directed networks, a pair of bidirectional interactions between two nodes cannot be assigned similarities and the edge that appears lower in the edge list for the network will be discarded.
 }
 

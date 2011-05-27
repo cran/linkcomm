@@ -17,7 +17,7 @@
 \usepackage[a4paper, left=25mm, right=20mm, top=20mm, bottom=25mm, nohead]{geometry}
 \setlength{\parskip}{1.5ex}
 \setlength{\parindent}{0cm}
-\pagestyle{empty}
+\pagestyle{plain}
 
 \usepackage{Sweave}
 
@@ -31,6 +31,7 @@
 \begin{document}
 \maketitle
 
+
 \begin{abstract}
 
 \noindent Identifying communities of related nodes in networks is an essential tool enabling researchers to make sense of complex data sets. The {\tt linkcomm} package greatly facilitates this process by extracting communities of links from networks of arbitrary size and type. By clustering links, as opposed to nodes, it is possible for nodes to belong to multiple communities thereby revealing the overlapping and nested structure of the network and uncovering the key nodes that form connections across several communities. In addition to this, {\tt linkcomm} provides extensive functionality for visualizing and analysing the resulting link communities.
@@ -38,6 +39,11 @@
 
 \end{abstract}
 
+
+
+\tableofcontents
+
+\clearpage
 
 \section{Introduction}
 
@@ -47,6 +53,7 @@ This approach is greatly enhanced by clustering the links between nodes, rather 
 
 The R package {\tt linkcomm} \citep{kalinka&tomancak2011} implements the algorithm proposed by \cite{ahnetal2010}. Similarities between links that share a node are assigned using the Jaccard coefficient and these similarities are then used to hierarchically cluster the links. The resulting dendrogram is cut at a point that maximises the density of links within the clusters after normalizing against the maximum and minimum numbers of links possible in each cluster.
 
+
 \section{Quick start}
 
 To install {\tt linkcomm} run the following command within R:
@@ -55,10 +62,30 @@ To install {\tt linkcomm} run the following command within R:
 install.packages("linkcomm")
 @
 
-\noindent To run an interactive demonstration of linkcomm within R:
+To load {\tt linkcomm} into your current R session:
+
+<<results = hide>>=
+library(linkcomm)
+@
+
+\noindent To run an interactive demonstration of {\tt linkcomm} within R:
 
 <<eval = FALSE>>=
 demo(topic = "linkcomm", package = "linkcomm")
+@
+
+\noindent Three networks are provided as part of the package so that users can see how the functions work before using their own data:
+
+\begin{enumerate}
+\item A co-appearance network for the stage musical of \emph{Les Mis\'{e}rables} ({\tt lesmiserables}).
+\item A social network of friendships between the members of a karate club ({\tt karate}).
+\item A sub-network of protein interactions from the yeast interactome ({\tt pp\_rnapol}).
+\end{enumerate}
+
+\noindent Each network is arranged as an edge list and stored as a data frame. Other acceptable formats for input networks are character or integer matrices.
+
+<<>>=
+head(lesmiserables)
 @
 
 
@@ -73,9 +100,6 @@ To illustrate the package we will extract communities from a densely-connected s
 
 When extracting communities from a network, the input data must be arranged as a simple edge list.
 
-<<results = hide, echo = FALSE>>=
-library(linkcomm)
-@
 
 <<eval = FALSE>>=
 yeast_pp <- read.table("pp_rnapol.txt", header = FALSE)
@@ -84,17 +108,18 @@ head(yeast_pp)
 
 <<echo = FALSE>>=
 load(file = "networks.rda")
-head(pp_rnapol)
+zz<-data.frame(V1=pp_rnapol[,1],V2=pp_rnapol[,2])
+head(zz)
 @
 
-\noindent In the above edge list, each row corresponds to an interaction between the elements in each of the columns. The interacting elements can be character names, as above, or integer numbers.
+\noindent In the above edge list, each row corresponds to an interaction between the elements in each of the columns. The interacting elements can be character names, as above, or integer numbers. We will extract link communities from this network using the ``single'' hierarchical clustering method, specified using the {\tt hcmethod} argument (several clustering methods are available for networks that can be handled in the memory, see {\tt ?getLinkCommunities} - the default is {\tt average}).
 
 <<eval = FALSE>>=
-lc <- getLinkCommunities(yeast_pp)
+lc <- getLinkCommunities(yeast_pp, hcmethod = "single")
 @
 
 <<echo = FALSE>>=
-cat("   Removing loops...\n   Removing edge duplicates...\n   Calculating edge similarities for 449 edges... 100.00%\n   Hierarchical clustering of edges...\n   Calculating link densities... 100.00%\n   Partition density maximum height =  0.3333333\n   Finishing up...4/4... 100%\n   Plotting...\n   Colouring dendrogram... 100%\n")
+cat("   Removing loops...\n   Removing edge duplicates...\n   Calculating edge similarities for 449 edges... 100.00%\n   Hierarchical clustering of edges...\n   Calculating link densities... 100.00%\n   Partition density maximum height =  0.33333\n   Finishing up...4/4... 100%\n   Plotting...\n   Colouring dendrogram... 100%\n")
 @
 
 
@@ -376,7 +401,7 @@ S(e_{ik},e_{jk})=\frac{\mathbf{a}_{i}.\mathbf{a}_{j}}{|\mathbf{a}_{i}|^{2}+|\mat
 
 \subsection{Handling large networks}
 
-The {\tt linkcomm} package can handle networks of any size. To do so, the upper triangular dissimilarity matrix used by the hierarchical clustering algorithm is compressed and written to disk as a temporary file. This matrix is then read, modified, and re-written (by a compiled C{}\verb!++! function) as clustering proceeds until the file size is 0 bytes. The speed at which large networks are processed will depend on the power of the computer being used. The size of the file that holds the compressed matrix may also be very large, so hard disk space could be a limiting factor for extremely large networks.
+The {\tt linkcomm} package can handle networks of any size. To do so, the upper triangular dissimilarity matrix used by the hierarchical clustering algorithm is compressed and written to disk as a temporary file. This matrix is then read, modified, and re-written (by a compiled C{}\verb!++! function) as clustering proceeds until the file size is 0 bytes. The speed at which large networks are processed will depend on the power of the computer being used. The size of the file that holds the compressed matrix may also be very large, so hard disk space could be a limiting factor for extremely large networks. In these cases, the hierarchical clustering method will always be ``single'' to enhance performance.
 
 We make no assumptions about the computer resources available to end users, and so we provide a parameter, {\tt edglim}, which can be modified by the user and which determines the maximum permissible size of the input network in terms of links for it to be handled in memory - above this size the dissimilarity matrix will be handled on the disk. The default value is $10^{4}$ links, but this can be modified:
 
@@ -396,6 +421,55 @@ linkcomm2cytoscape(lc, interaction = "pp", ea = "linkcomms.ea")
 @
 
 This will save an edge attribute file to ``linkcomms.ea'' in the current directory.
+
+\clearpage
+
+\section{Customizing network visualizations}
+
+
+\begin{figure}[!ht]%figure1
+\centerline{\includegraphics[width=7in]{custom_graphs.pdf}}
+\caption{Customized network visualizations.}\label{custom}
+\end{figure}
+
+
+While default network visualization styles are set in the package, full control of how networks are visualized is possible. To demonstrate this functionality, we will work with the co-appearance network of \emph{Les Mis\'{e}rables}.
+
+<<eval=FALSE>>=
+lm <- getLinkCommunities(lesmiserables, plot = FALSE)
+@
+
+If we wish to visualize the link communities using node shapes and with an enlarged node size for a particular node (in this case ``Valjean'') then we can achieve this using the {\tt graph.feature} function to generate a vector of node sizes which will be passed to the {\tt plot} function (Fig. \ref{custom}A). This function requires that the indices of the nodes or edges that are to be altered is provided together with the new values ({\tt features}) and the values held by the rest of the nodes or edges in the network ({\tt default}):
+
+<<eval=FALSE>>=
+nf <- graph.feature(lm, type = "nodes", indices = which(V(lm$igraph)$name == "Valjean"), features = 30, default = 5)
+plot(lm, type = "graph", vsize = nf, vshape = "circle", shownodesin = 4)
+@
+
+We may also plot larger nodes for all of the nodes belonging to a particular community or several communities. Here we enlarge the nodes belonging to community 1 using the {\tt getNodesIn} function, and we drop node labels using the {\tt vlabel} argument (Fig. \ref{custom}B):
+
+<<eval=FALSE>>=
+nf <- graph.feature(lm, type = "nodes", indices = getNodesIn(lm, clusterids = 1, type = "indices"), features = 30, default = 5)
+plot(lm, type = "graph", vsize = nf, vshape = "circle", vlabel = FALSE)
+@
+
+In addition, we may wish to make particular edges thicker. We can make all of the edges in community 14 thicker using the {\tt getEdgesIn} function (Fig. \ref{custom}C):
+
+<<eval=FALSE>>=
+ef <- graph.feature(lm, type = "edges", indices = getEdgesIn(lm, clusterids = 14), features = 5, default = 1)
+plot(lm, type="graph", ewidth = ef)
+@
+
+We can also make the edges incident upon a particular node thicker. Here we make all of the edges incident upon ``Myriel'' thicker, and also make this node larger (Fig. \ref{custom}D):
+
+<<eval=FALSE>>=
+ef <- graph.feature(lm, type = "edges", indices = getEdgesIn(lm, nodes = "Myriel"), features = 5, default = 1)
+nf <- graph.feature(lm, type = "nodes", indices = which(V(lm$igraph)$name == "Myriel"), features = 30, default = 5)
+plot(lm, type = "graph", vsize = nf, ewidth = ef, vshape = "circle", vlabel = FALSE)
+@
+
+Several other options are available and are described in {\tt ?getLinkCommunities} and also in {\tt ?igraph.plotting} in the {\tt igraph} R package.
+
 
 
 

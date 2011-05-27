@@ -1,6 +1,6 @@
 # Demonstration of linkcomm.
 
-require(linkcomm)
+#require(linkcomm)
 
 cat(paste(c("\n\n",rep("*",33),"\n*\tDemo of linkcomm\t*\n",rep("*",33),"\n\n"),collapse=""))
 
@@ -57,11 +57,11 @@ linkcomm.network <- function(x, name)
 
 	print(head(x))
 
-	cat(paste(c("\nGet link communities for this network...\n\n> lc <- getLinkCommunities(",name,", hcmethod=\"single\")\n\n"),collapse=""))
+	cat(paste(c("\nGet link communities for this network...\n\n> lc <- getLinkCommunities(",name,", hcmethod=\"average\")\n\n"),collapse=""))
 	
 	if(contFunc()){return(invisible())}
 
-	lc <- getLinkCommunities(x,edglim=1)
+	lc <- getLinkCommunities(x)
 
 	cat("\nDisplay community membership for the top 20 nodes that belong to the most communities...\n\n> plot(lc, type = \"members\")\n\n")
 

@@ -2,7 +2,7 @@ Package: linkcomm
 Type: Package
 Title: Tools for Generating, Visualizing, and Analysing Link
         Communities in Networks
-Version: 1.0-3
+Version: 1.0-4
 Date: 2011-05-27
 Author: Alex T. Kalinka <alex.t.kalinka@gmail.com>
 Maintainer: Alex T. Kalinka <alex.t.kalinka@gmail.com>
@@ -16,6 +16,6 @@ Imports: grid
 License: GPL (>= 2)
 LazyLoad: yes
 LazyData: yes
-Packaged: 2011-07-20 10:01:39 UTC; alexk
+Packaged: 2011-12-25 12:38:24 UTC; alexk
 Repository: CRAN
-Date/Publication: 2011-07-23 13:56:02
+Date/Publication: 2011-12-25 18:46:05

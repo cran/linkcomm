@@ -10,9 +10,12 @@ This function is called by \code{plot.linkcomm} to plot a graph layout of the li
 \usage{
 plotLinkCommGraph(x, clusterids = 1:length(x$clusters), nodes = NULL, 
         layout = layout.fruchterman.reingold, pal = brewer.pal(7, "Set2"), 
-        random = TRUE, vshape = "none", margin = 0, vertex.label.cex = 0.8, 
-        jitter = 0.2, circle = TRUE, printids = TRUE, cid.cex = 1, 
-        shownodesin = 0, showall = FALSE, verbose = TRUE, ...)
+        random = TRUE, vshape = "none", vsize = 15, ewidth = 3, margin = 0, 
+        vertex.label.cex = 0.8, vertex.label.color = "black", 
+        vertex.label.family = "Helvetica", vertex.color = "palegoldenrod", 
+        vlabel = TRUE, col.nonclusters = "black", jitter = 0.2, circle = TRUE, 
+        printids = TRUE, cid.cex = 1, shownodesin = 0, showall = FALSE, 
+        verbose = TRUE, ...)
 }
 
 \arguments{
@@ -26,7 +29,7 @@ An integer vector of community IDs. Defaults to all communities.
 A character vector naming the nodes to be plotted. If NULL, then community IDs are used instead. Defaults to NULL.
 }
   \item{layout}{
-A character string or function identifying the layout algorithm to be used for positioning nodes in the graph. Deafualts to \code{layout.fruchterman.reingold}. See details for alternative layouts.
+A character string or function identifying the layout algorithm to be used for positioning nodes in the graph. Defaults to \code{layout.fruchterman.reingold}. See details for alternative layouts.
 }
   \item{pal}{
 A character vector describing a colour palette to be used for colouring the link communities in the graph. Defaults to \code{brewer.pal(7, "Set2")}.
@@ -37,11 +40,32 @@ Logical, whether to randomise the link colours. Defaults to TRUE.
   \item{vshape}{
 A character string specifying the shape of the nodes. Can be one of \code{"none"}, \code{"circle"}, \code{"square"}, \code{"csquare"}, \code{"rectangle"}, \code{"crectangle"}, and \code{"vrectangle"}. Defaults to \code{"none"}.
 }
+  \item{vsize}{
+An integer vector of node sizes. If there is a single value this will be used for all nodes. If there are multiple values, it must be the same length as the number of nodes in the network to be visualized. See \code{\link{graph.feature}} for generating these values. This argument only has an effect when \code{vshape} is not set to \code{"none"}. Defaults to 15.
+}
+  \item{ewidth}{
+An integer vector of edge widths. If there is a single value this will be used for all edges. If there are multiple values, it must be the same length as the number of edges in the network to be visualized. See \code{\link{graph.feature}} for generating these values. Defaults to 3.
+}
   \item{margin}{
 A numerical value specifying the amount of empty space around the graph. Negative values will zoom into the graph. Defaults to 0.
 }
   \item{vertex.label.cex}{
 A numerical value specifying the size of node labels. Defaults to 0.8.
+}
+  \item{vertex.label.color}{
+A character string specifying the color of node labels. Defaults to \code{"black"}.
+}
+  \item{vertex.label.family}{
+A character string specifying the font family for node labels. Defaults to \code{"Helvetica"}.
+}
+  \item{vertex.color}{
+A character string specifying the colour of nodes. If this is a character vector then the colours will be recycled. Defaults to \code{"palegoldenrod"}.
+}
+  \item{vlabel}{
+Logical, whether node labels are to be added. Defaults to TRUE.
+}
+  \item{col.nonclusters}{
+A character string specifying the colour of edges that do not belong to any communities. Will only have an effect if \code{showall} is TRUE. Defaults to \code{"black"}.
 }
   \item{jitter}{
 A numerical value specifying the range (negative to positive) of random noise that will be added to nodes that have identical x-y coordinates. Defaults to 0.2. Only used for Spencer circle layouts.
@@ -101,7 +125,7 @@ Alex T. Kalinka \email{alex.t.kalinka@gmail.com}
 }
 
 \seealso{
-\code{\link{plot.linkcomm}}, \code{\link{layout.spencer.circle}}, \code{\link{igraph.plotting}}
+\code{\link{plot.linkcomm}}, \code{\link{layout.spencer.circle}}, \code{\link{graph.feature}}, \code{\link{igraph.plotting}}
 }
 \examples{
 ## Generate graph and extract link communities.

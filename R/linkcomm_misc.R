@@ -9,8 +9,9 @@ print.linkcomm <- function(x, ...)
 	# S3 method for generic function "print".
 	# x is a "linkcomm" object.
 	{
-	cat("   *** Summary ***\n   Number of nodes = ",x$numbers[2],"\n   Number of edges = ",x$numbers[1],"\n   Number of communities = ",x$numbers[3],"\n   Link partition density maximum height = ",x$pdmax,"\n   Number of nodes in largest cluster = ",x$clustsizes[1],"\n   Hclust method: ",x$hclust$method,"\n")
+	cat("   *** Summary ***\n   Number of nodes = ",x$numbers[2],"\n   Number of edges = ",x$numbers[1],"\n   Number of communities = ",x$numbers[3],"\n   Link partition density maximum height = ",x$pdmax,"\n   Number of nodes in largest cluster = ",x$clustsizes[1],"\n   Directed: ",x$directed,"\n   Hclust method: ",x$hclust$method,"\n")
 	}
+
 
 linkcomm2cytoscape <- function(x, interaction = "pp", ea= "temp.ea")
 	# Writes a Cytoscape edge attribute file to the current directory so that edges are assigned to their respective communities by cluster ID.
@@ -201,8 +202,10 @@ orderCommunities <- function(x, clusterids = 1:x$numbers[3], verbose = TRUE)
 	clusters <- x$clusters[clusterids]
 	dend <- x$hclust$order
 	miss <- setdiff(dend,unlist(clusters))
-	minds <- match(miss,dend)
-	dend <- dend[-minds]
+	if(length(miss) > 0){
+		minds <- match(miss,dend)
+		dend <- dend[-minds]
+		}
 	id <- dend[1]
 	ordered <- list()
 	clusids <- NULL
@@ -360,7 +363,7 @@ getClusterRelatedness <- function(x, clusterids = 1:x$numbers[3], hcmethod = "wa
 	}
 
 
-cutDendrogramAt <- function(x, lc = NULL, cutat = NULL, plot = TRUE, col = TRUE, pal = brewer.pal(9,"Set1"), labels = FALSE, plotcut = TRUE, right = TRUE, ...)
+cutDendrogramAt <- function(x, lc = NULL, cutat = NULL, plot = TRUE, col = TRUE, pal = brewer.pal(9,"Set1"), labels = FALSE, plotcut = TRUE, right = TRUE, verbose = TRUE, ...)
 	# Returns clusters from a dendrogram after cutting at a user-chosen height.
 	# x is an "hclust" object.
 	{
@@ -390,7 +393,7 @@ cutDendrogramAt <- function(x, lc = NULL, cutat = NULL, plot = TRUE, col = TRUE,
 			cols <- crf(length(clus))
 			cols <- sample(cols,length(clus),replace=FALSE)
 			numnodes <- nrow(x$merge) + length(which(x$merge[,1]<0)) + length(which(x$merge[,2]<0))
-			dd <- dendrapply(dd, .COL, height=cutat, clusters=unlist(clus), cols=cols, labels=labels, numnodes=numnodes, droptrivial = FALSE)
+			dd <- dendrapply(dd, .COL, height=cutat, clusters=unlist(clus), cols=cols, labels=labels, numnodes=numnodes, droptrivial = FALSE, verbose=verbose)
 			assign("i",0,environment(.COL))
 			assign("memb",0,environment(.COL))
 			assign("first",0,environment(.COL))
@@ -503,13 +506,94 @@ newLinkCommsAt <- function(x, cutat = 0.5)
 	}
 
 
-getNodesIn <- function(x, clusterids = 1)
+getNodesIn <- function(x, clusterids = 1, type = "names")
 	# x is a "linkcomm" object.
 	{
 	nodes <- unique(x$nodeclusters[x$nodeclusters[,2]%in%clusterids,1])
-	return(as.character(nodes))
+	if(type == "names"){
+		return(as.character(nodes))
+	}else if (type == "indices"){
+		inds <- match(nodes, V(x$igraph)$name)
+		return(inds)
+		}
 	}
 
+
+getEdgesIn <- function(x, clusterids = 1, nodes = NULL, all = FALSE)
+	# x is a "linkcomm" object.
+	{
+	if(is.null(nodes)==TRUE){
+		edges <- x$clusters[clusterids]
+		return(unlist(edges))
+	}else{
+		if(all){ # Return edges in all of the communities to which the node(s) belong.
+			clusterids <- unique(x$nodeclusters[x$nodeclusters[,1]%in%nodes,2])
+			edges <- x$clusters[clusterids]
+			return(unlist(edges))			
+		}else{ # Return only edges directly incident upon the node(s).
+			edges <- NULL
+			for(i in 1:length(nodes)){
+				edges <- append(edges, unique(c(which(x$edgelist[,1]==nodes), which(x$edgelist[,2]==nodes))))
+				}
+			return(unique(edges))
+			}
+		}
+	}
+
+
+graph.feature <- function(x, type = "nodes", clusterids = 1:length(x$clusters), nodes = NULL, indices, features, default = 15, showall = FALSE)
+	# x is a "linkcomm" object.
+	# features must be same length as indices.
+	# Returns named vector of node sizes or edge widths.
+	{
+	feat <- NULL
+	if(length(nodes) > 0){
+		clusterids <- unique(x$nodeclusters[x$nodeclusters[,1]%in%nodes,2])
+		}
+	clusters <- x$clusters[clusterids]
+	if(showall){
+		# Add single edge "clusters".
+		single <- setdiff(1:x$numbers[1],unlist(clusters))
+		ll <- length(clusters)
+		for(i in 1:length(single)){
+			clusters[[(i+ll)]] <- single[i]
+			}
+		}
+	if(type == "edges"){
+		edges <- x$edgelist[unlist(clusters),]
+		ig <- graph.edgelist(edges, directed=x$directed)
+		if(length(unlist(clusters)) >= nrow(x$edgelist)){ # No changes in index order needs to be made.
+			feat <- rep(default, length(E(ig)))
+			inds <- match((indices-1), E(ig))
+			feat[inds] <- features
+			names(feat) <- E(ig)
+		}else{
+			feat <- rep(default, length(E(ig)))
+			inds <- match(indices, unlist(clusters)) # Where are the edge indices in the re-ordered sub-network.
+			feat[inds] <- features
+			names(feat) <- E(ig)
+			}
+	}else if(type == "nodes"){
+		nodes <- V(x$igraph)$name[indices]
+		edges <- x$edgelist[unlist(clusters),]
+		ig <- graph.edgelist(edges, directed=x$directed)
+		if(length(unlist(clusters)) >= nrow(x$edgelist)){ # No changes in index order needs to be made.
+			feat <- rep(default, length(V(ig)))
+			feat[indices] <- features
+			names(feat) <- V(ig)$name
+			feat <- feat[match(names(feat), V(ig)$name)]
+		}else{
+			feat <- rep(default, length(V(ig)))
+			inds <- match(nodes, V(ig)$name)
+			feat[inds] <- features
+			names(feat) <- V(ig)$name
+			feat <- feat[match(names(feat), V(ig)$name)]
+			}
+		}
+
+	return(feat)
+
+	}
 
 
 

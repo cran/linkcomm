@@ -10,7 +10,7 @@ This function is called by \code{plot.linkcomm} to plot a dendrogram of coloured
 \usage{
 plotLinkCommDend(x, col = TRUE, pal = brewer.pal(9, "Set1"), 
         height = x$pdmax, right = FALSE, labels = FALSE, plotcut = TRUE, 
-        droptrivial = TRUE, leaflab = "none", ...)
+        droptrivial = TRUE, leaflab = "none", verbose = TRUE, ...)
 }
 
 \arguments{
@@ -40,6 +40,9 @@ Logical, whether to not colour communities of size 2. Defaults to TRUE.
 }
   \item{leaflab}{
 A character string describing the leaf labels on the dendrogram. Can be one of \code{"none"}, \code{"perpendicular"}, or \code{"textlike"}. Defaults to \code{"none"}.
+}
+  \item{verbose}{
+Logical, whether to display the progress of colouring the dendrogram on screen. Defaults to TRUE.
 }
   \item{\dots}{
 Additional arguments to be passed to \code{plot}.

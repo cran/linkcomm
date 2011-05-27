@@ -9,7 +9,7 @@ This function is called by \code{plot.linkcomm} to plot a summary of the output 
 }
 \usage{
 plotLinkCommSumm(x, col = TRUE, pal = brewer.pal(9, "Set1"), right = TRUE, 
-                 droptrivial = TRUE, ...)
+                 droptrivial = TRUE, verbose = TRUE, ...)
 }
 
 \arguments{
@@ -30,6 +30,9 @@ Logical, whether to not colour communities of size 2. Defaults to TRUE.
 }
   \item{\dots}{
 Additional arguments to be passed to \code{plot}.
+}
+  \item{verbose}{
+Logical, whether to display the progress of colouring the dendrogram on the screen. Defaults to TRUE.
 }
 }
 \details{

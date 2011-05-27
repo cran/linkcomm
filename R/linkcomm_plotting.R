@@ -19,7 +19,7 @@ plot.linkcomm <- function(x, type = "", ...)
 	}
 
 
-plotLinkCommSumm <- function(x, col = TRUE, pal = brewer.pal(9,"Set1"), right = TRUE, droptrivial = TRUE, ...)
+plotLinkCommSumm <- function(x, col = TRUE, pal = brewer.pal(9,"Set1"), right = TRUE, droptrivial = TRUE, verbose = TRUE, ...)
 	# x is a "linkcomm" object.
 	{
 	# Set up and colour clusters in dendrogram.
@@ -34,8 +34,8 @@ plotLinkCommSumm <- function(x, col = TRUE, pal = brewer.pal(9,"Set1"), right = 
 		cols <- crf(length(x$clusters))
 		cols <- sample(cols,length(x$clusters),replace=FALSE)
 		numnodes <- nrow(x$hclust$merge) + length(which(x$hclust$merge[,1]<0)) + length(which(x$hclust$merge[,2]<0))
-		dd <- dendrapply(dd,.COL,height=x$pdmax,clusters=cl,cols=cols,labels=FALSE,numnodes=numnodes,droptrivial = droptrivial)
-		cat("\n")
+		dd <- dendrapply(dd,.COL,height=x$pdmax,clusters=cl,cols=cols,labels=FALSE,numnodes=numnodes,droptrivial = droptrivial,verbose=verbose)
+		if(verbose){cat("\n")}
 		assign("i",0,environment(.COL))
 		assign("memb",0,environment(.COL))
 		assign("first",0,environment(.COL))
@@ -62,7 +62,20 @@ plotLinkCommSumm <- function(x, col = TRUE, pal = brewer.pal(9,"Set1"), right = 
 	grid.draw(title)
 	popViewport(1)
 	# Plot link partition densities.
-	pushViewport(viewport(layout.pos.row=2,layout.pos.col=3,xscale=c(0,(max(x$pdens[,2]+0.05)))))
+	numzeros <- -1*log10(max(x$pdens[,2]))
+	if(numzeros <= 1){ # Prevent partition density axis from being rounded to 0.
+		rr <- 1
+	}else{
+		rr <- trunc(numzeros)+1
+		}
+	if(round(max(x$pdens[,2]), digits = rr) > max(x$pdens[,2])){
+		xscale_add <- round(max(x$pdens[,2]), digits = rr) + 0.05*max(x$pdens[,2]) # Add 5% to part density x-axis.
+		xaxs_max <- round(max(x$pdens[,2]), digits = rr)
+	}else{
+		xscale_add <- max(x$pdens[,2]) + 0.075*max(x$pdens[,2]) # 7.5% of max partition density added to x-axis.
+		xaxs_max <- round(max(x$pdens[,2]), digits = (rr+1))
+		}
+	pushViewport(viewport(layout.pos.row=2, layout.pos.col=3, xscale=c(0,xscale_add)))
 	if(max(x$pdens[,1]==1)){
 		ph <- x$pdens[,1]
 		max <- x$pdmax
@@ -71,7 +84,7 @@ plotLinkCommSumm <- function(x, col = TRUE, pal = brewer.pal(9,"Set1"), right = 
 		max <- x$pdmax/max(x$pdens[,1])
 		}
 	grid.lines(x$pdens[,2],ph,gp=gpar(col='blue',lwd=2),default.units="native")
-	xticks <- seq(0,round(max(x$pdens[,2]),1),length.out=3)
+	xticks <- seq(0, xaxs_max, length.out=3)
 	xa <- grid.xaxis(at = xticks,draw=FALSE,name="xa")
 	xa <- editGrob(xa,gPath="ticks",y1 = unit(-0.02,"npc"))
 	xa <- editGrob(xa,gPath="labels",gp = gpar(fontsize=10),y = unit(-0.04,"npc"))
@@ -212,7 +225,7 @@ plotLinkCommMembers <- function(x, nodes = head(names(x$numclusters),10), pal = 
 	}
 
 
-plotLinkCommDend <- function(x, col=TRUE, pal = brewer.pal(9,"Set1"), height=x$pdmax, right = FALSE, labels=FALSE, plotcut=TRUE, droptrivial = TRUE, leaflab = "none", ...)
+plotLinkCommDend <- function(x, col=TRUE, pal = brewer.pal(9,"Set1"), height=x$pdmax, right = FALSE, labels=FALSE, plotcut=TRUE, droptrivial = TRUE, leaflab = "none", verbose = TRUE, ...)
 	# x is a "linkcomm" object.
 	{
 	dd <- as.dendrogram(x$hclust)
@@ -222,7 +235,7 @@ plotLinkCommDend <- function(x, col=TRUE, pal = brewer.pal(9,"Set1"), height=x$p
 		cols <- crf(length(x$clusters))
 		cols <- sample(cols,length(x$clusters),replace=FALSE)
 		numnodes <- nrow(x$hclust$merge) + length(which(x$hclust$merge[,1]<0)) + length(which(x$hclust$merge[,2]<0))
-		dd <- dendrapply(dd, .COL, height=height, clusters=cl, cols=cols, labels=labels, numnodes = numnodes, droptrivial = droptrivial)
+		dd <- dendrapply(dd, .COL, height=height, clusters=cl, cols=cols, labels=labels, numnodes = numnodes, droptrivial = droptrivial, verbose = verbose)
 		cat("\n")
 		assign("i",0,environment(.COL))
 		assign("memb",0,environment(.COL))
@@ -236,9 +249,9 @@ plotLinkCommDend <- function(x, col=TRUE, pal = brewer.pal(9,"Set1"), height=x$p
 	if(plotcut){
 		abline(h=height,col='red',lty=2,lwd=2)
 		}
-	ll <- sapply(x$clusters,length)
-	maxnodes <- length(unique(x$nodeclusters[x$nodeclusters[,2]%in%which(ll==max(ll)),1]))
-	summ <- paste("# clusters = ",length(x$clusters),"\nLargest cluster = ",maxnodes," nodes")
+	#ll <- sapply(x$clusters,length)
+	#maxnodes <- length(unique(x$nodeclusters[x$nodeclusters[,2]%in%which(ll==max(ll)),1]))
+	summ <- paste("# clusters = ",length(x$clusters),"\nLargest cluster = ",x$clustsizes[1]," nodes")
 	mtext(summ, line = -28)
 	}
 
@@ -250,17 +263,19 @@ first <- 0
 i <- 0
 left <- 0
 
-colorHclusters <<- function(x, height, clusters, cols, labels, numnodes, droptrivial)
+colorHclusters <<- function(x, height, clusters, cols, labels, numnodes, droptrivial, verbose)
 	# Adds colours to edges that belong to clusters below "height" in the dendrogram.
 	# Clusters gives leaf IDs for clusters that should be coloured.
 	# x is a node in the tree.
 	{
 	left <<- left + 1
-	out <- paste(c("   Colouring dendrogram... ",floor((left/numnodes)*100),"%"),collapse="")
-	cat(out,"\r")
-	flush.console()
+	if(verbose){
+		out <- paste(c("   Colouring dendrogram... ",floor((left/numnodes)*100),"%"),collapse="")
+		cat(out,"\r")
+		flush.console()
+		}
 
-	if(attributes(x)$height > height){
+	if(round(attributes(x)$height,digits=5) > height){
 		return(x)
 	}else{
 		if(is.leaf(x)){
@@ -279,7 +294,7 @@ colorHclusters <<- function(x, height, clusters, cols, labels, numnodes, droptri
 				first <<- 1
 			}else{
 				i <<- i+1
-				first <<- 1
+				first <<- 1 # Because we don't colour the edge leading to the first node in a cluster.
 				}
 			}
 		if(first == 0){
@@ -300,13 +315,19 @@ colorHclusters <<- function(x, height, clusters, cols, labels, numnodes, droptri
 })
 
 
-plotLinkCommGraph <- function(x, clusterids = 1:length(x$clusters), nodes = NULL, layout = layout.fruchterman.reingold, pal = brewer.pal(7,"Set2"), random = TRUE, vshape = "none", margin = 0, vertex.label.cex = 0.8, jitter = 0.2, circle = TRUE, printids = TRUE, cid.cex = 1, shownodesin = 0, showall = FALSE, verbose = TRUE, ...)
+plotLinkCommGraph <- function(x, clusterids = 1:length(x$clusters), nodes = NULL, layout = layout.fruchterman.reingold, pal = brewer.pal(7,"Set2"), random = TRUE, vshape = "none", vsize = 15, ewidth = 3, margin = 0, vertex.label.cex = 0.8, vertex.label.color = "black", vertex.label.family = "Helvetica", vertex.color = "palegoldenrod", vlabel = TRUE, col.nonclusters = "black", jitter = 0.2, circle = TRUE, printids = TRUE, cid.cex = 1, shownodesin = 0, showall = FALSE, verbose = TRUE, ...)
 	# x is a "linkcomm" object.
 	{
 	if(length(nodes) > 0){
 		clusterids <- unique(x$nodeclusters[x$nodeclusters[,1]%in%nodes,2])
 		}
 	clusters <- x$clusters[clusterids]
+	miss <- setdiff(x$hclust$order,unlist(clusters))
+	crf <- colorRampPalette(pal,bias=1)
+	cols <- crf(length(clusters))
+	if(random){
+		cols <- sample(cols,length(clusters),replace=FALSE)
+		}
 	if(showall){
 		# Add single edge "clusters".
 		single <- setdiff(1:x$numbers[1],unlist(clusters))
@@ -314,11 +335,7 @@ plotLinkCommGraph <- function(x, clusterids = 1:length(x$clusters), nodes = NULL
 		for(i in 1:length(single)){
 			clusters[[(i+ll)]] <- single[i]
 			}
-		}
-	crf <- colorRampPalette(pal,bias=1)
-	cols <- crf(length(clusters))
-	if(random){
-		cols <- sample(cols,length(clusters),replace=FALSE)
+		cols <- append(cols, rep(col.nonclusters, length(single)))
 		}
 	drawcircle <- FALSE
 	if(class(layout)=="character"){
@@ -333,10 +350,10 @@ plotLinkCommGraph <- function(x, clusterids = 1:length(x$clusters), nodes = NULL
 			drawcircle <- TRUE
 			}
 		}
-	if(length(unlist(clusters)) < nrow(x$edgelist)){
+	if(length(unlist(clusters)) < nrow(x$edgelist) || length(miss) == 0){
 		# Convert old clus ids into new ones.
 		edges <- x$edgelist[unlist(clusters),]
-		ig <- graph.edgelist(edges,directed=FALSE)
+		ig <- graph.edgelist(edges,directed=x$directed)
 		clen <- sapply(clusters,length)
 		j<-1
 		# Colour edges according to community membership.
@@ -354,7 +371,7 @@ plotLinkCommGraph <- function(x, clusterids = 1:length(x$clusters), nodes = NULL
 	
 	if(shownodesin == 0){
 		vnames <- V(ig)$name
-	}else{
+	}else{ # Show nodes that belong to more than x number of communities.
 		vnames <- V(ig)$name
 		inds <- NULL
 		for(i in 1:length(vnames)){
@@ -364,9 +381,12 @@ plotLinkCommGraph <- function(x, clusterids = 1:length(x$clusters), nodes = NULL
 			}
 		vnames[inds] <- ""
 		}
+	if(vlabel==FALSE){
+		vnames = NA
+		}
 
 	par(mar = c(4,4,2,2))
-	plot(ig, layout=layout, vertex.shape=vshape, edge.width=3, vertex.label=vnames, vertex.label.family="Helvetica", vertex.label.color="black", margin=margin, vertex.label.cex = vertex.label.cex, ...)
+	plot(ig, layout=layout, vertex.shape=vshape, edge.width=ewidth, vertex.label=vnames, vertex.label.family=vertex.label.family, vertex.label.color=vertex.label.color, vertex.size=vsize, vertex.color=vertex.color, margin=margin, vertex.label.cex = vertex.label.cex, ...)
 
 	if(circle && drawcircle){
 		# Add circle for Spencer layout.

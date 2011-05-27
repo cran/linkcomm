@@ -4,6 +4,23 @@ Author: Alex T. Kalinka (alex.t.kalinka@gmail.com).
 
 
 
+linkcomm 1.0-4
+==============
+
+- Added functions "getEdgesIn" and "graph.feature" and modified "getNodesIn" to allow customization of network visualizations.
+
+- Added "verbose" option to "getLinkCommunities", "plotLinkCommDend", and "plotLinkCommSummary".
+
+- Added "directed" logical component to the "linkcomm" object.
+
+- Fixed a bug that led to loss of the partition density axis in "summary" plots.
+
+- Fixed a bug that prevented the correct colouring of dendrograms when several clusters merge at the same height.
+
+- Updated vignette and manual documentation.
+
+
+
 linkcomm 1.0-3
 ==============
 
@@ -37,3 +54,5 @@ linkcomm 1.0-0
 ==============
 
 - Function-complete version of linkcomm uploaded onto CRAN. 
+
+
