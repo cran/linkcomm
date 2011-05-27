@@ -39,6 +39,7 @@ void nodeNeighbourhood(map<int, set<int> > &nN, map<int, map<int,double> > &wM, 
 	while(end == FALSE){
 		if(finda != *numedg){
 			if(first){add = 0;}else{add = finda+1;}
+			if(add > *numedg){add = *numedg;}
 			finda = find(eA.begin()+add, eA.end(), node) - eA.begin();
 			if(finda != *numedg){
 				nN[node].insert(eB.at(finda));
@@ -49,6 +50,7 @@ void nodeNeighbourhood(map<int, set<int> > &nN, map<int, map<int,double> > &wM, 
 			}
 		if(findb != *numedg){
 			if(first){add = 0;}else{add = findb+1;}
+			if(add > *numedg){add = *numedg;}
 			findb = find(eB.begin()+add, eB.end(), node) - eB.begin();
 			if(findb != *numedg){
 				nN[node].insert(eA.at(findb));
@@ -84,6 +86,7 @@ void getDirectedWeights_all(map<int,float> &dW, set<int> &comm, vector<int> &eA,
 
 		while(matchA == FALSE){
 			if(first){add = 0;}else{add = findNA + 1;}
+			if(add > *numedg){add = *numedg;}
 			findNA = find(eA.begin() + add, eA.end(), nonSA) - eA.begin();
 			if(findNA != *numedg){
 				if(eB.at(findNA) == commV.at(i)){
@@ -100,6 +103,7 @@ void getDirectedWeights_all(map<int,float> &dW, set<int> &comm, vector<int> &eA,
 			
 		while(matchB == FALSE){
 			if(first){add = 0;}else{add = findNB + 1;}
+			if(add > *numedg){add = *numedg;}
 			findNB = find(eA.begin() + add, eA.end(), nonSB) - eA.begin();
 			if(findNB != *numedg){
 				if(eB.at(findNB) == commV.at(i)){

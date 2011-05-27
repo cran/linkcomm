@@ -362,7 +362,7 @@ plotLinkCommGraph <- function(x, clusterids = 1:length(x$clusters), nodes = NULL
 	if(length(unlist(clusters)) < nrow(x$edgelist) || length(miss) == 0){
 		# Convert old clus ids into new ones.
 		edges <- x$edgelist[unlist(clusters),]
-		ig <- graph.edgelist(edges,directed=x$directed)
+		ig <- graph.edgelist(edges, directed=x$directed)
 		clen <- sapply(clusters,length)
 		j<-1
 		# Colour edges according to community membership.
@@ -474,7 +474,7 @@ layout.spencer.circle <- function(x, clusterids = 1:x$numbers[3], verbose = TRUE
 	{
 	clusters <- x$clusters[clusterids]
 	edges <- x$edgelist[unlist(clusters),]
-	ig <- graph.edgelist(edges,directed=FALSE)
+	ig <- graph.edgelist(edges, directed=FALSE)
 	# Put communities in dendrogram order.
 	clusters <- orderCommunities(x, clusterids = clusterids, verbose = verbose)$ordered
 	# Set up community anchor points in Cartesian coordinates around unit circle (communities evenly spaced).

@@ -70,7 +70,7 @@ Alex T. Kalinka \email{alex.t.kalinka@gmail.com}
 }
 
 \seealso{
-\code{\link{cutDendrogramAt}}, \code{\link{hclust}}
+\code{\link{meta.communities}}, \code{\link{cutDendrogramAt}}, \code{\link{hclust}}
 }
 \examples{
 ## Generate graph and extract link communities.

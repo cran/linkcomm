@@ -180,98 +180,116 @@ print(tt)
 
 
 ###################################################
-### code chunk number 30: linkcomm.Rnw:320-321
+### code chunk number 30: linkcomm.Rnw:308-309 (eval = FALSE)
+###################################################
+## mc <- meta.communities(lc, hcmethod = "ward", deepSplit = 0)
+
+
+###################################################
+### code chunk number 31: linkcomm.Rnw:329-330
 ###################################################
 cc <- getCommunityCentrality(lc)
 
 
 ###################################################
-### code chunk number 31: linkcomm.Rnw:324-325 (eval = FALSE)
+### code chunk number 32: linkcomm.Rnw:333-334 (eval = FALSE)
 ###################################################
 ## cc <- getCommunityCentrality(lc)
 
 
 ###################################################
-### code chunk number 32: linkcomm.Rnw:328-329
+### code chunk number 33: linkcomm.Rnw:337-338
 ###################################################
 head(sort(cc, decreasing = TRUE))
 
 
 ###################################################
-### code chunk number 33: linkcomm.Rnw:335-336
+### code chunk number 34: linkcomm.Rnw:344-345
 ###################################################
 head(lc$numclusters)
 
 
 ###################################################
-### code chunk number 34: linkcomm.Rnw:351-353 (eval = FALSE)
+### code chunk number 35: linkcomm.Rnw:360-362 (eval = FALSE)
 ###################################################
 ## cm <- getCommunityConnectedness(lc, conn = "modularity")
 ## plot(lc, type = "commsumm", summary = "modularity")
 
 
 ###################################################
-### code chunk number 35: linkcomm.Rnw:360-361
+### code chunk number 36: linkcomm.Rnw:369-370
 ###################################################
 plot(lc, type = "commsumm", summary = "modularity", verbose = FALSE)
 
 
 ###################################################
-### code chunk number 36: linkcomm.Rnw:372-373
+### code chunk number 37: linkcomm.Rnw:381-382
 ###################################################
 lc2 <- newLinkCommsAt(lc, cutat = 0.4)
 
 
 ###################################################
-### code chunk number 37: linkcomm.Rnw:376-377 (eval = FALSE)
+### code chunk number 38: linkcomm.Rnw:385-386 (eval = FALSE)
 ###################################################
 ## lc2 <- newLinkCommsAt(lc, cutat = 0.4)
 
 
 ###################################################
-### code chunk number 38: linkcomm.Rnw:382-383
+### code chunk number 39: linkcomm.Rnw:391-392
 ###################################################
 print(lc2)
 
 
 ###################################################
-### code chunk number 39: linkcomm.Rnw:391-392
+### code chunk number 40: linkcomm.Rnw:400-401
 ###################################################
 getNodesIn(lc, clusterids = c(4,5))
 
 
 ###################################################
-### code chunk number 40: linkcomm.Rnw:402-403 (eval = FALSE)
+### code chunk number 41: linkcomm.Rnw:406-407
+###################################################
+get.shared.nodes(lc, comms = c(3,4))
+
+
+###################################################
+### code chunk number 42: linkcomm.Rnw:416-417 (eval = FALSE)
 ###################################################
 ## lc <- getLinkCommunities(yeast_pp, directed = TRUE, dirweight = 0.8)
 
 
 ###################################################
-### code chunk number 41: linkcomm.Rnw:408-409
+### code chunk number 43: linkcomm.Rnw:422-423
 ###################################################
 head(weighted)
 
 
 ###################################################
-### code chunk number 42: linkcomm.Rnw:427-428 (eval = FALSE)
+### code chunk number 44: linkcomm.Rnw:441-442 (eval = FALSE)
 ###################################################
 ## lc <- getLinkCommunities(yeast_pp, edglim = 10)
 
 
 ###################################################
-### code chunk number 43: linkcomm.Rnw:438-439 (eval = FALSE)
+### code chunk number 45: linkcomm.Rnw:452-453 (eval = FALSE)
 ###################################################
 ## linkcomm2cytoscape(lc, interaction = "pp", ea = "linkcomms.ea")
 
 
 ###################################################
-### code chunk number 44: linkcomm.Rnw:457-458 (eval = FALSE)
+### code chunk number 46: linkcomm.Rnw:458-459 (eval = FALSE)
+###################################################
+## linkcomm2clustnsee(lc, file = "temp.cns", network.name = "network")
+
+
+###################################################
+### code chunk number 47: linkcomm.Rnw:477-478 (eval = FALSE)
 ###################################################
 ## lm <- getLinkCommunities(lesmiserables, plot = FALSE)
 
 
 ###################################################
-### code chunk number 45: linkcomm.Rnw:463-466 (eval = FALSE)
+### code chunk number 48: linkcomm.Rnw:483-486 (eval = FALSE)
 ###################################################
 ## nf <- graph.feature(lm, type = "nodes", indices = which(V(lm$igraph)$name == "Valjean"), 
 ##                     features = 30, default = 5)
@@ -279,7 +297,7 @@ head(weighted)
 
 
 ###################################################
-### code chunk number 46: linkcomm.Rnw:471-474 (eval = FALSE)
+### code chunk number 49: linkcomm.Rnw:491-494 (eval = FALSE)
 ###################################################
 ## nf <- graph.feature(lm, type = "nodes", indices = getNodesIn(lm, clusterids = 1, 
 ##                     type = "indices"), features = 30, default = 5)
@@ -287,7 +305,7 @@ head(weighted)
 
 
 ###################################################
-### code chunk number 47: linkcomm.Rnw:479-482 (eval = FALSE)
+### code chunk number 50: linkcomm.Rnw:499-502 (eval = FALSE)
 ###################################################
 ## ef <- graph.feature(lm, type = "edges", indices = getEdgesIn(lm, clusterids = 14), 
 ##                     features = 5, default = 1)
@@ -295,7 +313,7 @@ head(weighted)
 
 
 ###################################################
-### code chunk number 48: linkcomm.Rnw:487-492 (eval = FALSE)
+### code chunk number 51: linkcomm.Rnw:507-512 (eval = FALSE)
 ###################################################
 ## ef <- graph.feature(lm, type = "edges", indices = getEdgesIn(lm, nodes = "Myriel"), 
 ##                     features = 5, default = 1)
@@ -305,25 +323,25 @@ head(weighted)
 
 
 ###################################################
-### code chunk number 49: linkcomm.Rnw:508-509
+### code chunk number 52: linkcomm.Rnw:528-529
 ###################################################
 oc <- getOCG.clusters(lesmiserables)
 
 
 ###################################################
-### code chunk number 50: linkcomm.Rnw:512-513
+### code chunk number 53: linkcomm.Rnw:532-533
 ###################################################
 cat("Calculating Initial class System....Done\nNb. of classes 43\nNb. of edges not within the classes 19\nNumber of initial classes 43\nRunning....\nRemaining classes: None\nReading OCG data...\nExtracting cluster sizes... 100%\n")
 
 
 ###################################################
-### code chunk number 51: linkcomm.Rnw:518-519
+### code chunk number 54: linkcomm.Rnw:538-539
 ###################################################
 print(oc)
 
 
 ###################################################
-### code chunk number 52: linkcomm.Rnw:524-525 (eval = FALSE)
+### code chunk number 55: linkcomm.Rnw:544-545 (eval = FALSE)
 ###################################################
 ## plot(oc, type = "graph", shownodesin = 7, scale.vertices = 0.1)
 

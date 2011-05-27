@@ -26,7 +26,7 @@
 \author{Alex T. Kalinka}
 \date{\today \\
 	alex.t.kalinka@gmail.com \\
-	Max Planck Institute of Molecular Cell Biology and Genetics, Dresden, Germany.}
+	\small{Institute for Population Genetics, Vetmeduni Vienna, Veterin{\"a}rplatz 1, 1210 Vienna, Austria.}}
 
 \begin{document}
 \maketitle
@@ -303,6 +303,15 @@ print(tt)
 
 \noindent This returns the meta-communities (clusters of community IDs). Alternatively, we could have cut the dendrogram using the {\tt cutat} option in the original clustering function, {\tt getClusterRelatedness}. We can verify that these meta-communities make sense by inspecting the communities in the Spencer circle (Fig. \ref{graphs}). Note that nodes may still belong to multiple meta-communities.
 
+\noindent When working with large networks, the algorithm will typically identify large numbers of link communities (hundreds or more), which can be difficult to handle. Therefore, it is useful to collapse these larger numbers of communitites into smaller numbers of meta-communities. This can be achieved with the {\tt meta.communities()} function, which utilises an algorithm to automatically identify clusters from a hierarchical clustering dendrogram \citep{langfelderetal2008}:
+
+<<eval = FALSE>>=
+mc <- meta.communities(lc, hcmethod = "ward", deepSplit = 0)
+@
+
+\noindent Where the {\tt deepSplit} argument, taking values from 0-4, indicates how fine-grained the clustering should be, with higher values producing more clusters. The function outputs an object of class {\tt linkcomm} but with a smaller set of larger communities.
+
+
 \subsubsection{Community centrality}
 
 In link communities, nodes may belong to several communities, and so it is possible to measure the importance of a node in a network based on the number of communities to which it belongs. To do this, we weight the membership of a node in a community by how distinct that community is from the other communities to which the same node belongs
@@ -392,6 +401,11 @@ We can extract the nodes from single or multiple communities:
 getNodesIn(lc, clusterids = c(4,5))
 @
 
+We can also find nodes that are shared by sets of communities:
+
+<<>>=
+get.shared.nodes(lc, comms = c(3,4))
+@
 
 
 \subsection{Directed and weighted networks}
@@ -439,7 +453,13 @@ Cytoscape is an open source platform for complex-network analysis and visualizat
 linkcomm2cytoscape(lc, interaction = "pp", ea = "linkcomms.ea")
 @
 
-This will save an edge attribute file to ``linkcomms.ea'' in the current directory.
+This will save an edge attribute file to ``linkcomms.ea'' in the current directory. Communities can also be exported to the Clust\&See Cytoscape plug-in which can be used for visualizing and manipulating the clusters produced by various network clustering algorithms \citep{spinellietal2013}:
+
+<<eval = FALSE>>=
+linkcomm2clustnsee(lc, file = "temp.cns", network.name = "network")
+@
+
+\noindent This will save a Clust\&See compatible file to the current directory.
 
 \clearpage
 
@@ -550,9 +570,13 @@ The option {\tt scale.vertices} allows us to increase the size of nodes by a spe
 
 \bibitem[Kalinka and Tomancak, 2011]{kalinka&tomancak2011} Kalinka, A.T., and Tomancak, P. (2011) linkcomm: an R package for the generation, visualization, and analysis of link communities in networks of arbitrary size and type. {\it Bioinformatics}, {\bf 27}, 2011-2012.
 
+\bibitem[Langfelder et al, 2008]{langfelderetal2008} Langfelder, P., Zhang, B., and Horvath, S. (2008) Defining clusters from a hierarchical cluster tree: the Dynamic Tree Cut package for R. {\it Bioinformatics} 24, 719-720.
+
 \bibitem[Radicchi {\it et al}., 2004]{radicchietal2004} Raddichi, F., \emph{et al}. (2004) Defining and identifying communities in networks. {\it Proc. Natl Acad. Sci USA}, {\bf 101}, 2658-2663.
 
 \bibitem[Spencer, 2010]{spencer2010} Spencer, R., (2010). http://scaledinnovation.com/analytics/communities/comlinks.html.
+
+\bibitem[Spinelli {\it et al}, 2013]{spinellietal2013} Spinelli, L., Gambette, P., Chapple, C. E., Robisson, B., Baudot, A., Garreta, H., Tichit, L., Guenoche, A., and Brun, C. (2013). Clust\&See: a Cytoscape plugin for the identification, visualization and manipulation of network clusters. {\it BioSystems} 113, 91-95.
 
 \bibitem[Yu {\it et al}., 2008]{yuetal2008} Yu, H., \emph{et al}. (2008) High-quality binary protein interaction map of the yeast interactome network. {\it Science}, {\bf 322}, 104-110.
 

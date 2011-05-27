@@ -947,7 +947,7 @@ for(i=0;i<N;i++){
    //   printf("# %s results on graph file %s\n", argv[0],FichE);
    fprintf(OUT, "# Graph file %s has %d Vertices and %d edges\n",FichE,N,Na);
    //fprintf(OUT, "# Degree maximum: %d\n",DgMax);
-   fprintf(OUT, "# Rate of edges: %.4f\n",1.*Na/N/(N-1),Na);
+   fprintf(OUT, "# Rate of edges: %.4f\n",1.*Na/N/(N-1));
    
    ko=0;
    for (i=1; i < N; i++){
@@ -955,7 +955,7 @@ for(i=0;i<N;i++){
        if (A[i][j] && A[j][i]){ ko++;}
      }
    }
-   fprintf(OUT, "# Rate of intraclass edges: %.3f\n#\n",1.*ko/Na,Na,ko);
+   fprintf(OUT, "# Rate of intraclass edges: %.3f\n#\n",1.*ko/Na);
 
    
  switch(typ){

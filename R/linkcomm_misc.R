@@ -226,9 +226,9 @@ orderCommunities <- function(x, clusterids = 1:x$numbers[3], verbose = TRUE)
 			flush.console()
 			}
 		for(j in 1:length(clusters)){
-			if(!is.na(match(id,clusters[[j]]))){
+			if(!is.na(match(id, clusters[[j]]))){
 				ordered[[i]] <- clusters[[j]]
-				dend <- dend[-c(1:length(clusters[[j]]))]
+				dend <- dend[-match(clusters[[j]], dend)]
 				id <- dend[1]
 				clusids[i] <- clusterids[j]
 				break
@@ -602,6 +602,117 @@ graph.feature <- function(x, type = "nodes", clusterids = 1:length(x$clusters), 
 	return(feat)
 
 	}
+
+
+get.community.overlaps <- function(x){
+	# x is a linkcomm or OCG object.
+	tt <- list()
+	for(i in 1:x$numbers[3]){tt[[i]]<-NA}
+	for(i in 1:x$numbers[2]){
+		ww <- which.communities(x, nodes = V(x$igraph)$name[i])
+		if(length(ww)>0){
+			for(j in 1:length(ww)){
+				tt[[ww[j]]] <- append(tt[[ww[j]]], ww)
+				tt[[ww[j]]] <- tt[[ww[j]]][-which(tt[[ww[j]]] == ww[j])]
+				}
+			}
+		}
+	# Clean up NA's and make communities unique.
+	for(i in 1:length(tt)){
+		if(length(which(tt[[i]]>0))>0){
+			tt[[i]] <- tt[[i]][-which(is.na(tt[[i]]))]
+			tt[[i]] <- sort(unique(tt[[i]]))
+			}
+		}
+	return(tt)
+	}
+
+
+get.shared.nodes <- function(x, comms){
+	# x is a linkcomm or OCG object.
+	# comms is a vector of community IDs.
+	qq <- list()
+	for(i in 1:length(comms)){
+		qq[[i]] <- getNodesIn(x, clusterids=comms[i])
+		}
+	nn <- Reduce(intersect, qq)
+	return(nn)
+	}
+
+
+meta.communities <- function(x, hcmethod = "ward", deepSplit = FALSE)
+	{
+	# x is a linkcomm or OCG object.
+
+	dissvec <- getClusterRelatedness(x, cluster = FALSE)
+
+	distmatrix <- matrix(1,x$numbers[3], x$numbers[3])
+	distmatrix[lower.tri(distmatrix)] <- dissvec
+	colnames(distmatrix) <- 1:x$numbers[3]
+	rownames(distmatrix) <- 1:x$numbers[3]
+	cat("   Hierarchical clustering...\n")
+	hcl <- hclust(as.dist(distmatrix), method = hcmethod)
+
+	scl <- cutreeHybrid(hcl, distM = distmatrix, deepSplit = deepSplit)
+
+	scl <- scl$labels
+	names(scl) <- 1:x$numbers[3]
+	# Zero indicates community did not get clustered.
+
+	# Modify original linkcomm object to reflect new communities.
+	nc <- length(unique(scl))
+	x$nodeclusters[,2] <- scl[match(x$nodeclusters[,2], names(scl))]
+	# Remove duplicates.
+	dd <- duplicated(x$nodeclusters)
+	wd <- which(dd==TRUE)
+	if(length(wd) > 0){
+		x$nodeclusters <- x$nodeclusters[-wd,]
+		}
+	
+	# Number of nodes in each cluster.
+	nn <- NULL
+	for(i in 1:nc){
+		nn <- append(nn, length(which(x$nodeclusters[,2]==i)))
+		}
+	x$clustsizes <- nn
+	names(x$clustsizes) <- 1:nc
+	# Need a new edge cluster list which merges edges into new clusters.
+	if(class(x)=="linkcomm"){
+		ecl <- list()
+		for(i in 1:nc){
+			# Get old communities that belong to this new cluster.
+			oc <- as.integer(names(scl)[which(scl==i)])
+			ecl[[i]] <- sort(unlist(x$clusters[oc]))
+			}
+		x$clusters <- ecl
+		x$edges[,3] <- scl[match(x$edges[,3], names(scl))]
+		}
+
+	# Extract the number of edge clusters that each node belongs to.
+	unn <- unique(x$nodeclusters[,1])
+
+	iecn <- as.integer(as.factor(x$nodeclusters[,1]))
+	iunn <- unique(iecn)
+	lunn <- length(iunn)
+	nrows <- nrow(x$nodeclusters)
+
+	oo <- rep(0,lunn)
+
+	verbose <- TRUE
+
+	oo <- .C("getNumClusters", as.integer(iunn), as.integer(iecn), counts = as.integer(oo), as.integer(lunn), as.integer(nrows), as.logical(verbose))$counts
+	cat("\n")
+
+	names(oo) <- unn
+	
+	x$numclusters <- oo
+	# Finally, change the number of communities.
+	x$numbers[3] <- nc
+
+	return(x)
+
+	}
+
 
 
 

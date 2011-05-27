@@ -44,8 +44,9 @@ void getNodeNeighbourhood(map<int, set<int> > &nN, map<int, map<int,double> > &w
 
 	// Get first-order node neighbourhoods for the non-shared nodes.
 	while(end == FALSE){
-		if(finda != *numedg && which == 0 || which == 1){
+		if((finda != *numedg && which == 0) || which == 1){
 			if(first){add = 0;}else{add = finda+1;}
+			if(add > *numedg){add = *numedg;}
 			finda = find(eA.begin()+add, eA.end(), nonSA) - eA.begin();
 			if(finda != *numedg){
 				nN[nonSA].insert(eB.at(finda));
@@ -54,8 +55,9 @@ void getNodeNeighbourhood(map<int, set<int> > &nN, map<int, map<int,double> > &w
 					}
 				}
 			}
-		if(findb != *numedg && which == 0 || which == 1){
+		if((findb != *numedg && which == 0) || which == 1){
 			if(first){add = 0;}else{add = findb+1;}
+			if(add > *numedg){add = *numedg;}
 			findb = find(eB.begin()+add, eB.end(), nonSA) - eB.begin();
 			if(findb != *numedg){
 				nN[nonSA].insert(eA.at(findb));
@@ -64,8 +66,9 @@ void getNodeNeighbourhood(map<int, set<int> > &nN, map<int, map<int,double> > &w
 					}
 				}
 			}
-		if(findab != *numedg && which == 0 || which == 2){
+		if((findab != *numedg && which == 0) || which == 2){
 			if(first){add = 0;}else{add = findab+1;}
+			if(add > *numedg){add = *numedg;}
 			findab = find(eA.begin()+add, eA.end(), nonSB) - eA.begin();
 			if(findab != *numedg){
 				nN[nonSB].insert(eB.at(findab));
@@ -74,9 +77,10 @@ void getNodeNeighbourhood(map<int, set<int> > &nN, map<int, map<int,double> > &w
 					}
 				}
 			}
-		if(findba != *numedg && which == 0 || which == 2){
+		if((findba != *numedg && which == 0) || which == 2){
 			if(first){add = 0;}else{add = findba+1;}
-			findba =find(eB.begin()+add, eB.end(), nonSB) - eB.begin();
+			if(add > *numedg){add = *numedg;}
+			findba = find(eB.begin()+add, eB.end(), nonSB) - eB.begin();
 			if(findba != *numedg){
 				nN[nonSB].insert(eA.at(findba));
 				if(*weighted){
@@ -111,6 +115,7 @@ void getDirectedWeights(map<int,float> &dW, set<int> &comm, vector<int> &eA, vec
 
 		while(matchA == FALSE){
 			if(first){add = 0;}else{add = findNA + 1;}
+			if(add > *numedg){add = *numedg;}
 			findNA = find(eA.begin() + add, eA.end(), nonSA) - eA.begin();
 			if(findNA != *numedg){
 				if(eB.at(findNA) == commV.at(i)){
@@ -127,6 +132,7 @@ void getDirectedWeights(map<int,float> &dW, set<int> &comm, vector<int> &eA, vec
 			
 		while(matchB == FALSE){
 			if(first){add = 0;}else{add = findNB + 1;}
+			if(add > *numedg){add = *numedg;}
 			findNB = find(eA.begin() + add, eA.end(), nonSB) - eA.begin();
 			if(findNB != *numedg){
 				if(eB.at(findNB) == commV.at(i)){
@@ -181,9 +187,11 @@ void getEdgeSimilarities(int *ea, int *eb, int *numedg, int *rowlen, double *wei
 	set<int> total;
 	set<int>::iterator sit;
 	map<int, set<int> > nodeNeighb;
+	nodeNeighb[-1].insert(0); // Initialize with dummy variable.
 	map<int, set<int> >::iterator mitA;
 	map<int, set<int> >::iterator mitB;
 	map<int, map<int,double> > weightMap;
+	weightMap[-1].insert( pair<int,double>(-1, 0.0) ); // Initialize.
 	map<int,double> mapA;
 	map<int,double> mapB;
 	map<int,float> dirWeights;
@@ -220,7 +228,7 @@ void getEdgeSimilarities(int *ea, int *eb, int *numedg, int *rowlen, double *wei
 		row.assign(*numedg-1-i, 1);
 		end = FALSE; j = 0;
 		finda = 0; findb = 0; findab = 0; findba = 0;
-
+        
 		// Find edges that share a node with this edge.
 		while(end == FALSE){
 			if(finda != *numedg){

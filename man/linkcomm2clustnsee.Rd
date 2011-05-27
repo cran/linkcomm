@@ -23,7 +23,7 @@ A character string providing a name for the network. This name must correspond t
 }
 }
 \details{
-Cytoscape is an open source platform for complex-network analysis and visualization, and Clust&See is a Cytoscape plug-in used for visualizing the clusters produced by various network clustering algorithms (\url{http://tagc.univ-mrs.fr/tagc/index.php/clustnsee}).
+Cytoscape is an open source platform for complex-network analysis and visualization, and Clust&See (Spinelli et al. 2013) is a Cytoscape plug-in used for visualizing and manipulating the clusters produced by various network clustering algorithms (\url{http://tagc.univ-mrs.fr/tagc/index.php/clustnsee}).
 }
 \value{
 Used for its side-effect of writing a Clust&See partition file to disk.
@@ -36,6 +36,8 @@ Gambette, P. and Guenoche, A. (2011) Bootstrap clustering for graph partitioning
 Kalinka, A.T. and Tomancak, P. (2011). linkcomm: an R package for the generation, visualization, and analysis of link communities in networks of arbitrary size and type. \emph{Bioinformatics} \bold{27}, 2011-2012.
 
 Shannon, P. et al. (2003) Cytoscape: A software environment for integrated models of biomolecular interaction networks. \emph{Genome Research} \bold{13}, 2498-2504.
+
+Spinelli, L. et al. (2013) Clust&See: a Cytoscape plugin for the identification, visualization, and manipulation of network clusters. \emph{BioSystems} \bold{113}, 91-95.
 
 }
 \author{

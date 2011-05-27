@@ -256,7 +256,7 @@ void hclustLinkComm(int *numedg, int *rowlen, float *heights, int *hca, int *hcb
 					//outfile.write((char *) &diff, sizeof(float));
 					rowM.push_back(diff);
 					//Rprintf("diff: %1.3f\n",diff);
-				}else if(frit != merges.end() && diff <= 1 && diff != -1 || fcit != merges.end() && diff <= 1 && diff != -1){
+				}else if((frit != merges.end() && diff <= 1 && diff != -1) || (fcit != merges.end() && diff <= 1 && diff != -1)){
 					p = 0;
 					for(i = 0; i < merges.size(); i++){ // Save clustered diff.
 						if(i % 2 != 0){p++;}

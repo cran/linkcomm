@@ -157,7 +157,7 @@ void getJaccards(int *nodes, int *clusters, int *clusids, int *numNodes, double 
 	for(i = 0; i < clusMap.size()-1; i++){
 		
 		if(*verbose){
-			prog = (i+0.0)/(*numNodes)*100;
+			prog = (i+0.0)/(clusMap.size()-2)*100;
 
 			Rprintf("\r   Calculating cluster similarities 2/2... %3.2f%%",prog);
 
