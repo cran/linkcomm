@@ -113,13 +113,13 @@ void hclustLinkComm(unsigned int *numedg, int *rowlen, float *heights, int *hca,
 
 	copy(rowlen, rowlen + (*numedg-1), back_inserter(rowL)); // Copy row lengths into a vector.
 
-	remove("linkcomm_diss");
-
 	infile.open("linkcomm_diss.txt", ios::in );
-	outfile.open("linkcomm_diss", ios::out | ios::binary);
 	if(! infile.is_open()){
 			Rprintf("\nERROR: linkcomm_diss.txt not found!\n"); return;
 			}
+
+	//remove("linkcomm_diss");
+	outfile.open("linkcomm_diss", ios::out | ios::binary);
 
 	/* Read in decimal data file and write out binary data file. */
 	while(getline(infile,line)){

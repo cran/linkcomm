@@ -326,6 +326,15 @@ getClusterRelatedness <- function(x, clusterids = 1:x$numbers[3], hcmethod = "wa
 	# Uses Jaccard coefficient to assign relatedness based on the number of shared nodes.
 	# x is a "linkcomm" object.
 	{
+	# Check for downwards-incompatibility of ward.D:
+	if(hcmethod == "ward.D" || hcmethod == "ward.D2"){
+		qq <- sessionInfo()
+		vers <- as.numeric(substr(paste(qq$R.version$major, qq$R.version$minor, sep="."),1,3))
+		if(vers < 3.1){
+			hcmethod <- "ward"
+			}
+		}
+
 	nodes <- x$nodeclusters[x$nodeclusters[,2]%in%clusterids,1]
 	clusters <- x$nodeclusters[x$nodeclusters[,2]%in%clusterids,2]
 	numN <- length(nodes)
@@ -651,6 +660,16 @@ meta.communities <- function(x, hcmethod = "ward.D", deepSplit = FALSE)
 	colnames(distmatrix) <- 1:x$numbers[3]
 	rownames(distmatrix) <- 1:x$numbers[3]
 	cat("   Hierarchical clustering...\n")
+
+	# Check for downwards-incompatibility of ward.D:
+	if(hcmethod == "ward.D" || hcmethod == "ward.D2"){
+		qq <- sessionInfo()
+		vers <- as.numeric(substr(paste(qq$R.version$major, qq$R.version$minor, sep="."),1,3))
+		if(vers < 3.1){
+			hcmethod <- "ward"
+			}
+		}
+
 	hcl <- hclust(as.dist(distmatrix), method = hcmethod)
 
 	scl <- cutreeHybrid(hcl, distM = distmatrix, deepSplit = deepSplit)

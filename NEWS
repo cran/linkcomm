@@ -4,6 +4,13 @@ Author: Alex T. Kalinka (alex.t.kalinka@gmail.com).
 
 
 
+linkcomm 1.0-11
+===============
+
+- Fixed downwards-incompatibility issue related to the "ward.D" clustering method name change.
+
+
+
 linkcomm 1.0-10
 ===============
 

@@ -1,9 +1,9 @@
-a6e8813fedcdcaf49045cf8512c033ec *DESCRIPTION
+df0d3f4ee29aafda4e62a0de603619ca *DESCRIPTION
 37706e9229c95369ee2f208b34128b5b *NAMESPACE
-6496c5d3b06c9a28d747b51640ab7224 *NEWS
+d9af5b2b8e7b65d4bb9eef3dd40f8b34 *NEWS
 2a15aff06e480327042f320694a7ff5b *R/OCG_main.R
 d5a3b3a0ddda7dff079a07469b6b56b5 *R/linkcomm_main.R
-7bb08a7631cbf275b2e8dda4c7b0ff73 *R/linkcomm_misc.R
+3a3c17d0998cbe41f080774536cd2834 *R/linkcomm_misc.R
 6acac1e41323b7615f83e06d607b4033 *R/linkcomm_plotting.R
 a4c8b54395bceae9cbac45a76cf0f036 *build/vignette.rds
 d20294a92ed4b3ce710c71052420c10e *data/networks.rda
@@ -12,7 +12,7 @@ afb6e3ed14cdbe738d511af176dab96e *demo/00Index
 1bf2c28cdfa3f1ea740ee6de0a2079a3 *inst/CITATION
 c100763eed9c5e69204a2b07e917f902 *inst/doc/linkcomm.R
 1ec8a802a9259e43d7f750ed07c75ae6 *inst/doc/linkcomm.Rnw
-4ac9fb9b8830507a8bb8369594227289 *inst/doc/linkcomm.pdf
+ca8892414601120224c396caa15860f6 *inst/doc/linkcomm.pdf
 f7e436e66e16ccec86541312281e7bd0 *man/LinkDensities.Rd
 ab96c72f81f4acb44df2551398fdb30c *man/corLinkcommCentrality.Rd
 ba07923eb7da05ea57845548e5c93410 *man/cutDendrogramAt.Rd
@@ -61,7 +61,7 @@ db4361f1aab2c050b69effad66e63db5 *src/edge_duplicates.cpp
 d7b1794bbe6bbda9046d7a5b40419887 *src/linkcomm_edgesims.cpp
 b193d54d433f7bde428f8f9302b8a65b *src/linkcomm_edgesims_all.cpp
 b0261add7fb42ef9aebcc869c59a85e0 *src/linkcomm_functions.cpp
-f5a6f3ab22d9f2ae7b2e0e74b8ec9496 *src/linkcomm_hclust.cpp
+78151b308cef65427557ca273d96787b *src/linkcomm_hclust.cpp
 49974a38b7eb3adfcf8f20f7f28f5c2e *src/linkcomm_linkdensities.cpp
 cd26db55884851dc0498d24f45559bc3 *src/linkcommhclust_order.cpp
 fc3b02655af6642867e0d4aab924f922 *src/read_OCG.cpp
