@@ -8,11 +8,12 @@ Plot a Graph Layout of OCG Communities
 This function is called by \code{plot.OCG} to plot a graph layout of the OCG communities.
 }
 \usage{
-plotOCGraph(x, clusterids = 1:x$numbers[3], nodes = NULL, 
+plotOCGraph(x, clusterids = 1:x$numbers[3], nodes = NULL, pie.local = TRUE, 
         incident = TRUE, layout = layout.fruchterman.reingold, 
         vertex.radius = 0.03, scale.vertices = 0.05, edge.color = "grey",
-        vertex.label.color = "black", pal = brewer.pal(7,"Set2"),
-        shownodesin = 0, vlabel = TRUE, random = TRUE)
+        vertex.label.color = "black", vertex.label.cex = 0.8,
+        pal = brewer.pal(7,"Set2"), shownodesin = 0, vlabel = TRUE, 
+        random = TRUE, ...)
 }
 
 \arguments{
@@ -25,8 +26,11 @@ An integer vector of community IDs. Defaults to all communities.
   \item{nodes}{
 A character vector naming the nodes to be plotted. If NULL, then community IDs are used instead. Defaults to NULL.
 }
+  \item{pie.local}{
+Logical, whether to include pie segments for just the communities to which the chosen nodes belong, or for all communities. In the latter case, communities that are not present among the chosen nodes will appear as empty segments in the node pies. Defaults to TRUE.
+}
   \item{incident}{
-Logical, whether to include the community membership of all nodes that interact with the names node(s), or just the communities of the named node(s). Defaults to TRUE.
+Logical, whether to include just the communities of the named node(s), or the community membership of all nodes that interact with the named node(s). Defaults to TRUE.
 }
   \item{layout}{
 A character string or function identifying the layout algorithm to be used for positioning nodes in the graph. Defaults to \code{layout.fruchterman.reingold}. See details for alternative layouts.
@@ -43,6 +47,9 @@ A character string specifying the colour of edges. Defaults to \code{"grey"}.
   \item{vertex.label.color}{
 A character string specifying the color of node labels. Defaults to \code{"black"}.
 }
+  \item{vertex.label.cex}{
+A numerical value specifying the size of the node labels. Defaults to 0.8.
+}
   \item{pal}{
 A character vector describing a colour palette to be used for colouring the link communities in the graph. Defaults to \code{brewer.pal(7, "Set2")}.
 }
@@ -54,6 +61,9 @@ Logical, whether node labels are to be added. Defaults to TRUE.
 }
   \item{random}{
 Logical, whether to randomise the link colours. Defaults to TRUE.
+}
+  \item{\dots}{
+Additional arguments to be passed to \code{plot}.
 }
 }
 \details{

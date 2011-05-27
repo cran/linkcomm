@@ -179,7 +179,7 @@ getOCG.clusters <- function(network, init.class.sys = 3, fusion.method = 0, max.
 which.communities <- function(x, nodes)
 	# x is a "linkcomm" or "OCG" object.
 	{
-	comms <- unique(x$nodeclusters[x$nodeclusters[,1]%in%nodes,2])
+	comms <- unique(as.integer(x$nodeclusters[x$nodeclusters[,1]%in%nodes,2]))
 	return(comms)
 	}
 
@@ -216,7 +216,7 @@ numberEdgesIn <- function(x, clusterids = 1:x$numbers[3], nodes)
 	}
 
 
-plotOCGraph <- function(x, clusterids = 1:x$numbers[3], nodes = NULL, incident = TRUE, layout = layout.fruchterman.reingold, vertex.radius = 0.03, scale.vertices = 0.05, edge.color = "grey", vertex.label.color = "black", pal = brewer.pal(7,"Set2"), shownodesin = 0, vlabel = TRUE, random = TRUE)
+plotOCGraph <- function(x, clusterids = 1:x$numbers[3], nodes = NULL, pie.local = TRUE, incident = TRUE, layout = layout.fruchterman.reingold, vertex.radius = 0.03, scale.vertices = 0.05, edge.color = "grey", vertex.label.color = "black", vertex.label.cex = 0.8, pal = brewer.pal(7,"Set2"), shownodesin = 0, vlabel = TRUE, random = TRUE, ...)
 	# x is an "OCG" object.
 	{
 	# Make an edgelist based on clusterids or nodes.
@@ -264,10 +264,14 @@ plotOCGraph <- function(x, clusterids = 1:x$numbers[3], nodes = NULL, incident =
 		}
 
 	# Get node community membership by edges.
-	edge.memb <- numberEdgesIn(x, clusterids = clusterids, nodes = nodes)
+	if(pie.local){
+		edge.memb <- numberEdgesIn(x, clusterids = clusterids, nodes = nodes)
+	}else{
+		edge.memb <- numberEdgesIn(x, nodes = nodes)
+		}
 
 	cat("   Getting node layout...")
-	lay <- layout.fruchterman.reingold(ig) # vertex x-y positions; will serve as centre points for node pies.
+	lay <- layout(ig) # vertex x-y positions; will serve as centre points for node pies.
 	lay <- layout.norm(lay, xmin=-1, xmax=1, ymin=-1, ymax=1)
 	rownames(lay) <- V(ig)$name
 	cat("\n")
@@ -277,7 +281,8 @@ plotOCGraph <- function(x, clusterids = 1:x$numbers[3], nodes = NULL, incident =
 
 	dev.hold(); on.exit(dev.flush())
 	# Plot graph.
-	plot(ig, layout=lay, vertex.shape="none", vertex.label=NA, vertex.label.dist=1, vertex.label.color=vertex.label.color, edge.color=edge.color)
+	plot(ig, layout=lay, vertex.shape="none", vertex.label=NA, vertex.label.dist=1, vertex.label.color=vertex.label.color, edge.color=edge.color, ...)
+	labels <- list()
 	# Plot node pies and node names.
 	for(i in 1:length(node.pies)){
 		yp <- NULL
@@ -286,11 +291,14 @@ plotOCGraph <- function(x, clusterids = 1:x$numbers[3], nodes = NULL, incident =
 			polygon(node.pies[[i]][[j]][,1], node.pies[[i]][[j]][,2], col = seg.col)
 			yp <- append(yp, node.pies[[i]][[j]][,2])
 			}
-		label_y <- max(yp) + 0.02 # Highest point of node pie.
-		label_x <- lay[which(rownames(lay)==names(node.pies[i])),1] + 0.1
-		text(label_x, label_y, labels = vnames[which(nodes==names(node.pies[i]))], cex = 0.8)
+		lx <- lay[which(rownames(lay)==names(node.pies[i])),1] + 0.1
+		ly <- max(yp) + 0.02 # Highest point of node pie.
+		labels[[i]] <- c(lx, ly)
 		}
-
+	# Plot node names after nodes so they overlay them.
+	for(i in 1:length(labels)){
+		text(labels[[i]][1], labels[[i]][2], labels = vnames[which(nodes==names(node.pies[i]))], cex = vertex.label.cex, col = vertex.label.color)
+		}
 	}
 
 

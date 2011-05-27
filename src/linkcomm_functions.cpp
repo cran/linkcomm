@@ -23,7 +23,7 @@ extern "C" {
 
 using namespace std;
 
-void cutTreeAt(int *ma, int *mb, double *heights, double *cutat, int *csize, int *numM, bool *carriageret)
+void cutTreeAt(int *ma, int *mb, double *heights, double *cutat, int *csize, int *numM)
 
 	{
 
@@ -53,17 +53,7 @@ void cutTreeAt(int *ma, int *mb, double *heights, double *cutat, int *csize, int
 
 		prog = (i+0.0)/(mergeA.size()-1)*100;
 
-		if(*carriageret){
-			Rprintf("   Extracting clusters... %3.2f%\r",prog);
-		}else{
-			if(i == 0){
-				Rprintf("   Extracting clusters...\r\n");
-				}
-			if(prog >= perc){
-				Rprintf("|");
-				perc++;
-				}
-			}
+		Rprintf("\r   Extracting clusters... %3.2f%%",prog);
 
 		R_FlushConsole();
 		R_ProcessEvents();
@@ -123,7 +113,7 @@ void cutTreeAt(int *ma, int *mb, double *heights, double *cutat, int *csize, int
 	}
 
 
-void getJaccards(int *nodes, int *clusters, int *clusids, int *numNodes, double *dissvec, bool *verbose, bool *carriageret)
+void getJaccards(int *nodes, int *clusters, int *clusids, int *numNodes, double *dissvec, bool *verbose)
 	
 	{
 
@@ -141,17 +131,7 @@ void getJaccards(int *nodes, int *clusters, int *clusids, int *numNodes, double 
 		if(*verbose){
 			prog = (i+0.0)/(*numNodes)*100;
 
-			if(*carriageret){
-				Rprintf("   Calculating cluster similarities 1/2... %3.2f%\r",prog);
-			}else{
-				if(i == 0){
-					Rprintf("   Calculating cluster similarities 1/2...\r\n");
-					}
-				if(prog >= perc){
-					Rprintf("|");
-					perc++;
-					}
-				}
+			Rprintf("\r   Calculating cluster similarities 1/2... %3.2f%%",prog);
 
 			R_FlushConsole();
 			R_ProcessEvents();
@@ -179,17 +159,7 @@ void getJaccards(int *nodes, int *clusters, int *clusids, int *numNodes, double 
 		if(*verbose){
 			prog = (i+0.0)/(*numNodes)*100;
 
-			if(*carriageret){
-				Rprintf("   Calculating cluster similarities 2/2... %3.2f%\r",prog);
-			}else{
-				if(i == 0){
-					Rprintf("   Calculating cluster similarities 2/2...\r\n");
-					}
-				if(prog >= perc){
-					Rprintf("|");
-					perc++;
-					}
-				}
+			Rprintf("\r   Calculating cluster similarities 2/2... %3.2f%%",prog);
 
 			R_FlushConsole();
 			R_ProcessEvents();
@@ -220,7 +190,50 @@ void getJaccards(int *nodes, int *clusters, int *clusids, int *numNodes, double 
 
 
 
+void getNumClusters(int *unn, int *nodes, int *counts, int *numnodes, int *nrows, bool *verbose)
+	{
+
+	int i, j, nd;
+	float prog;
+
+	// Loop through nodes and count their community membership.
+	for(i = 0; i < *numnodes; i++){
+
+		if(*verbose){
+			prog = (i+0.0)/(*numnodes-1.0)*100;
+
+			Rprintf("\r   Finishing up...4/4... %3.2f%%",prog);
+
+			R_FlushConsole();
+			R_ProcessEvents();
+			}   
+
+		nd = unn[i];
+
+		for(j = 0; j < *nrows; j++){
+
+			if(nodes[j] == nd){
+				counts[i]++;
+				}
+			}
+
+		}
+
 	}
+
+
+
+
+
+
+
+	}
+
+
+
+
+
+
 
 
 

@@ -4,6 +4,30 @@ Author: Alex T. Kalinka (alex.t.kalinka@gmail.com).
 
 
 
+
+linkcomm 1.0-6
+==============
+
+- Improved memory usage during the calculation of link densities.
+
+- Added "node.pies" argument to "plotLinkCommGraph" to enable the visualization of nodes as pie charts of edge community membership.
+
+- Included "edge.duplicates" function that finds loops, duplicate and bi-directional edges using a C++ function.
+
+- Added "dist" argument to "getLinkCommunities" to allow the user to specify their own distance matrix.
+
+- Fixed a bug that prevented link dendrograms from rendering correctly when trivial clusters are included.
+
+- Fixed a bug that that led to summary plots rendering incorrectly if plotted sequentially on the same graphics device.
+
+- Modified "plotOCGraph" so that node labels overlay node symbols.
+
+- Changed Windows progress indicators to percentages.
+
+- Updated vignette documentation to highlight node pie plots.
+
+
+
 linkcomm 1.0-5
 ==============
 

@@ -27,7 +27,7 @@ extern "C" {
 using namespace std;
 
 
-void getNodeNeighbourhood(map<int, set<int> > &nN, map<int, map<int,double> > &wM, vector<int> &eA, vector<int> &eB, int nonSA, int nonSB, int *numedg, bool *weighted, 				double *weights, int which)
+void getNodeNeighbourhood(map<int, set<int> > &nN, map<int, map<int,double> > &wM, vector<int> &eA, vector<int> &eB, int nonSA, int nonSB, int *numedg, bool *weighted, double *weights, int which)
 
 	{
 
@@ -157,8 +157,7 @@ void getDirectedWeights(map<int,float> &dW, set<int> &comm, vector<int> &eA, vec
 
 
 
-void getEdgeSimilarities(int *ea, int *eb, int *numedg, int *rowlen, double *weights, bool *directed, double *dirweight, bool *weighted, bool *disk, double *dissvec, 
-				bool *carriageret, bool *verbose)
+void getEdgeSimilarities(int *ea, int *eb, int *numedg, int *rowlen, double *weights, bool *directed, double *dirweight, bool *weighted, bool *disk, double *dissvec, bool *verbose)
 
 	{
 
@@ -212,17 +211,7 @@ void getEdgeSimilarities(int *ea, int *eb, int *numedg, int *rowlen, double *wei
 		if(*verbose){
 			prog = (i+0.0)/(*numedg-2)*100;
 
-			if(*carriageret){
-				Rprintf("   Calculating edge similarities for %d edges... %3.2f%\r",*numedg,prog);
-			}else{
-				if(i == 0){
-					Rprintf("   Calculating edge similarities for %d edges...\r\n",*numedg);
-					}
-				if(prog >= perc){
-					Rprintf("|");
-					perc++;
-					}
-				}
+			Rprintf("\r   Calculating edge similarities for %d edges... %3.2f%%",*numedg,prog);
 
 			R_FlushConsole();
 			R_ProcessEvents();

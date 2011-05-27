@@ -8,13 +8,14 @@ Extract Link Communities from a Network
 This function extracts link communities from networks of arbitrary size and type.
 }
 \usage{
-getLinkCommunities(x, hcmethod = "average", edglim = 10^4, 
-                   directed = FALSE, dirweight = 0.5, plot = TRUE, 
-                   removetrivial = TRUE, verbose = TRUE)
+getLinkCommunities(network, hcmethod = "average", edglim = 10^4, 
+                   directed = FALSE, dirweight = 0.5, dist = NULL, 
+                   plot = TRUE, check.duplicates = TRUE, removetrivial = TRUE, 
+                   verbose = TRUE)
 }
 
 \arguments{
-  \item{x}{
+  \item{network}{
 An edge list, which is a matrix or data frame with 2 or 3 columns. The first 2 columns contain the nodes that interact with each other, which can be character strings or integer values. The optional third column is a numerical vector of weights for each edge.
 }
   \item{hcmethod}{
@@ -29,8 +30,14 @@ Logical, whether the network is directed. Defaults to FALSE.
   \item{dirweight}{
 A numerical value between 1 and 0 inclusive indicating the weight that will be attached to edges that share a node but are in the opposite orientation. Defaults to 0.5. Will be ignored if \code{directed} = FALSE.
 }
+  \item{dist}{
+An object of class \code{"dist"} representing a user-defined distance matrix for the network. Note, this must be the lower triangular matrix of an n*n distance matrix, where n is the number of edges in the network (make sure duplicated edges are removed). If NULL, then the distance matrix is calculated by the algorithm. Defaults to NULL.
+}
   \item{plot}{
-Logical, whether to plot summary output from the algorithm (dendrogram and partition density plot). Defaults to TRUE.
+Logical, whether to plot summary output from the algorithm (dendrogram and partition density plot). Defaults to TRUE. Note, if there are more than 1500 but less than edglim edges then the dendrogram will be plotted without colour and in a separate panel from the partition density to avoid lengthy rendering times; when there are more than edglim edges then only the partition density will be plotted.
+}
+  \item{check.duplicates}{
+Logical, whether to check for and remove loops, duplicate edges, and bi-directional edges. Defaults to TRUE. Note, if you wish to avoid this step by setting this parameter to FALSE then you must be certain that there are no duplicate edges in the network.
 }
   \item{removetrivial}{
 Logical, whether to remove trivial community clusters that contain 2 edges. Defaults to TRUE.
@@ -45,7 +52,7 @@ This is the main algorithm used for extracting link communities from networks of
 where \eqn{n_{+}(i)} refers to the first-order node neighbourhood of node i. After assigning pairwise similarities to all of the links in the network, the links are hierarchically clustered using single-linkage clustering, and the resulting dendrogram is cut at a point that maximises the density of links within the clusters normalising against the maximum and minimum numbers of links possible in each cluster, known as the partition density.
 For directed and weighted networks, the Tanimoto coefficient is used for assigning similarity between links
 \deqn{S(e_{ik},e_{jk})=\frac{\mathbf{a}_{i}.\mathbf{a}_{j}}{|\mathbf{a}_{i}|^{2}+|\mathbf{a}_{j}|^{2}-\mathbf{a}_{i}.\mathbf{a}_{j}}}{S(e_{ik},e_{jk}) = (a_{i}.a_{j})/(|a_{i}|^{2}+|a_{j}|^{2}-a_{i}.a_{j})}
-where \eqn{\mathbf{a}_{i}}{a_{i}} refers to a vector describing the weights of links between node i and the nodes in the first-order neighbourhoods of both nodes i and j (equal to 0 in the event of an absent link). For directed networks, links to nodes shared by both node i and j are given a user-defined weight below 1 if they are in the opposite orientation.\cr
+where \eqn{\mathbf{a}_{i}}{a_{i}} refers to a vector describing the weights of links between node i and the nodes in the first-order neighbourhoods of both nodes i and j (equal to 0 in the event of an absent link). For directed networks, links to nodes shared by both node i and j are given a user-defined weight below 1 if they are in the opposite orientation.\cr\cr\cr
 When the number of links is less than \code{edglim} the hierarchical clustering will be handled in memory. Above this value the upper triangular dissimilarity matrix will be compressed and written to disk and read and written as clustering proceeds until the file size is 0 bytes using a compiled C++ function. In this case the hierarchical clustering method will always be \dQuote{single} to enhance performance for large networks. The size of \code{edglim} can be modified to suit the computer resources available to the user. As a guide, a network with \eqn{10^{4}} links will require \eqn{((10^{4})^{2})*8 = 800} MB to be handled in an uncompressed format in the memory.
 }
 \value{

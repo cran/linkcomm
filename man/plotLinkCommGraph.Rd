@@ -8,13 +8,14 @@ Plot a Graph Layout of Link Communities
 This function is called by \code{plot.linkcomm} to plot a graph layout of the link communities.
 }
 \usage{
-plotLinkCommGraph(x, clusterids = 1:length(x$clusters), nodes = NULL, 
-        layout = layout.fruchterman.reingold, pal = brewer.pal(7, "Set2"), 
-        random = TRUE, vshape = "none", vsize = 15, ewidth = 3, margin = 0, 
-        vertex.label.cex = 0.8, vertex.label.color = "black", 
-        vertex.label.family = "Helvetica", vertex.color = "palegoldenrod", 
-        vlabel = TRUE, col.nonclusters = "black", jitter = 0.2, circle = TRUE, 
-        printids = TRUE, cid.cex = 1, shownodesin = 0, showall = FALSE, 
+plotLinkCommGraph(x, clusterids = 1:length(x$clusters), nodes = NULL,
+        layout = layout.fruchterman.reingold, pal = brewer.pal(7, "Set2"),
+        random = TRUE, node.pies = TRUE, pie.local = TRUE, vertex.radius = 0.03,
+        scale.vertices = 0.05, edge.color = NULL, vshape = "none", vsize = 15,
+        ewidth = 3, margin = 0, vlabel.cex = 0.8, vlabel.color = "black",
+        vlabel.family = "Helvetica", vertex.color = "palegoldenrod",
+        vlabel = TRUE, col.nonclusters = "black", jitter = 0.2, circle = TRUE,
+        printids = TRUE, cid.cex = 1, shownodesin = 0, showall = FALSE,
         verbose = TRUE, ...)
 }
 
@@ -37,6 +38,21 @@ A character vector describing a colour palette to be used for colouring the link
   \item{random}{
 Logical, whether to randomise the link colours. Defaults to TRUE.
 }
+  \item{node.pies}{
+Logical, whether to plot node pies showing as a pie chart the fraction of each node's edges which belong to each of its communities. Defaults to TRUE.
+}
+  \item{pie.local}{
+Logical, whether to include pie segments for just the communities to which the chosen nodes belong, or for all communities. In the latter case, communities that are not present among the chosen nodes will appear as empty segments in the node pies. Will be ignored if node.pies is FALSE. Defaults to TRUE.
+}
+\item{vertex.radius}{
+A real number specifying the vertex radius. Defaults to 0.03. Will be ignored if node.pies is FALSE.
+}
+\item{scale.vertices}{
+A real number specifying the fraction of increase in vertex radius for each community membership. If NULL then all vertices are the same size. Defaults to 0.05. Will be ignored if node.pies is FALSE.
+}
+\item{edge.color}{
+A character string specifying the colour of edges. Defaults to \code{"grey"}. Will be ignored if node.pies is FALSE.
+}
   \item{vshape}{
 A character string specifying the shape of the nodes. Can be one of \code{"none"}, \code{"circle"}, \code{"square"}, \code{"csquare"}, \code{"rectangle"}, \code{"crectangle"}, and \code{"vrectangle"}. Defaults to \code{"none"}.
 }
@@ -49,13 +65,13 @@ An integer vector of edge widths. If there is a single value this will be used f
   \item{margin}{
 A numerical value specifying the amount of empty space around the graph. Negative values will zoom into the graph. Defaults to 0.
 }
-  \item{vertex.label.cex}{
+  \item{vlabel.cex}{
 A numerical value specifying the size of node labels. Defaults to 0.8.
 }
-  \item{vertex.label.color}{
+  \item{vlabel.color}{
 A character string specifying the color of node labels. Defaults to \code{"black"}.
 }
-  \item{vertex.label.family}{
+  \item{vlabel.family}{
 A character string specifying the font family for node labels. Defaults to \code{"Helvetica"}.
 }
   \item{vertex.color}{

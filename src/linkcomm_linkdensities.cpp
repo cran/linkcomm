@@ -16,29 +16,34 @@
 #include <iterator>
 #include <algorithm>
 #include <set>
+#include <map>
 
 extern "C" {
 #include <R.h>
 
 using namespace std;
 
-void getLinkDensities(int *ma, int *mb, int *ea, int *eb, int *numedg, int *clusnums, double *pdens, double *heights, double *pdmax, int *csize, bool *removetrivial, 
-			bool *carriageret, bool *verbose)
+void getLinkDensities(int *ma, int *mb, int *ea, int *eb, int *numedg, int *clusnums, double *pdens, double *heights, double *pdmax, int *csize, bool *removetrivial, bool *verbose)
 
 	{
 
-	int i, j, k, p = 0, ne, nn, count = 0, csum = clusnums[0], perc = 0;
-	float prog;
+	int i, j, k, p = 0, ne, nn, count = 0, csum = clusnums[0], perc = 0, one = 0, rm = 0;
+	float prog, memuse;
 	double ldens, maxp, best = 0;
 	vector<int> mergeA;
 	vector<int> mergeB;
 	vector<int> edgeA;
 	vector<int> edgeB;
 	vector<int> drop;
-	vector< vector<int> > clusters;
+	vector<int> dropTemp;
+	vector<int> rem;
+	map<int, vector<int> > clusters;
 	vector<int> current;
 	vector<int> currentTemp;
 	vector<int> bestC;
+	vector<int> cdel; // Indices of clusters that can be deleted to free up memory.
+	vector<int> cdelTemp;
+	vector<int>::iterator bestIt;
 	set<int> nodes;
 
 	copy(ma, ma + *numedg-1, back_inserter(mergeA));
@@ -55,28 +60,15 @@ void getLinkDensities(int *ma, int *mb, int *ea, int *eb, int *numedg, int *clus
 			Rprintf("\nERROR: can't open linkcomm_clusters.txt!\n"); return;
 			}
 
-	for(i = 0; i < (*numedg-1); i++){ // Construct matrix for clusters.
-			clusters.push_back(vector<int>());
-			}
 
 	// Loop through merges from lowest to highest.
-	// At each merge extract cluster elements and write to disk.
+	// At each merge extract cluster elements.
 	for(i = 0; i < *numedg-1; i++){
 		
 		if(*verbose){
 			prog = (i+0.0)/(*numedg-2)*100;
 
-			if(*carriageret){
-				Rprintf("   Calculating link densities... %3.2f%\r",prog);
-			}else{
-				if(i == 0){
-					Rprintf("   Calculating link densities...\r\n");
-					}
-				if(prog >= perc){
-					Rprintf("|");
-					perc++;
-					}
-				}
+			Rprintf("\r   Calculating link densities... %3.2f%%",prog);
 
 			R_FlushConsole();
 			R_ProcessEvents();
@@ -87,33 +79,61 @@ void getLinkDensities(int *ma, int *mb, int *ea, int *eb, int *numedg, int *clus
 			clusters[i].push_back(-1*mergeB.at(i));
 			sort(clusters[i].begin(),clusters[i].end());
 			current.push_back(i); // Update current cluster subs.
+			one = 0;
 		}else if(mergeA.at(i) > 0 && mergeB.at(i) < 0){
 			clusters[i] = clusters[mergeA.at(i)-1];
 			clusters[i].push_back(-1*mergeB.at(i));
+			cdel.push_back(mergeA.at(i)-1); // Index of merged cluster so it can be deleted when possible.
 			sort(clusters[i].begin(),clusters[i].end());
 			current.push_back(i);
 			drop.push_back(mergeA.at(i) - 1);
+			one = 1;
 		}else if(mergeA.at(i) < 0 && mergeB.at(i) > 0){
 			clusters[i] = clusters[mergeB.at(i)-1];
 			clusters[i].push_back(-1*mergeA.at(i));
+			cdel.push_back(mergeB.at(i)-1);
 			sort(clusters[i].begin(),clusters[i].end());
 			current.push_back(i);
 			drop.push_back(mergeB.at(i) - 1);
+			one = 1;
 		}else{
 			clusters[i].insert(clusters[i].end(), clusters[mergeA.at(i)-1].begin(), clusters[mergeA.at(i)-1].end());
 			clusters[i].insert(clusters[i].end(), clusters[mergeB.at(i)-1].begin(), clusters[mergeB.at(i)-1].end());
+			cdel.push_back(mergeA.at(i)-1);
+			cdel.push_back(mergeB.at(i)-1);
 			sort(clusters[i].begin(),clusters[i].end());
 			current.push_back(i);
 			drop.push_back(mergeA.at(i) - 1);
 			drop.push_back(mergeB.at(i) - 1);
+			one = 2;
 			}
+
+		// Clear out memory.
+		if(one != 0){
+			cdelTemp = cdel;
+			rm = 0;
+			for(j = 1; j <= one; j++){
+				bestIt = find(bestC.begin(), bestC.end(), cdel.at( cdel.size()-j ));
+				if(bestIt == bestC.end()){
+					clusters.erase( cdel.at( cdel.size()-j ) );
+					cdelTemp.erase( cdelTemp.end() - j + rm );
+					rm++;
+					}
+				}
+			cdel = cdelTemp;
+			cdelTemp.clear();
+			}
+
 
 		if(i+1 == csum){ // Reached end of this height, calculate link densities for the current clusters.
 			currentTemp = current;
 			sort(drop.begin(),drop.end());
 			for(j = 0; j < drop.size(); j++){
-				currentTemp.erase(currentTemp.begin() + drop.at(j) - j);
+				bestIt = find(currentTemp.begin(), currentTemp.end(), drop.at(j));
+				currentTemp.erase( bestIt );
 				}
+			drop.clear();
+
 			ldens = 0;
 			for(j = 0; j < currentTemp.size(); j++){
 				// Number of edges.
@@ -135,7 +155,30 @@ void getLinkDensities(int *ma, int *mb, int *ea, int *eb, int *numedg, int *clus
 				best = maxp;
 				*pdmax = heights[p];
 				bestC = currentTemp;
+				// Clusters at this height are more optimal so we can free memory used by previously merged clusters.
+				for(j = 0; j < cdel.size(); j++){
+					clusters.erase( cdel.at(j) );
+					}
+				cdel.clear();
 				}
+
+			// Clusters at this height are not optimal so we can free memory from previously merged clusters
+			// that do not belong to the currently optimal cluster set.
+			cdelTemp = cdel;
+			rm = 0;
+			for(j = 0; j < cdel.size(); j++){
+				bestIt = find(bestC.begin(), bestC.end(), cdel.at(j));
+				if(bestIt == bestC.end()){
+					clusters.erase( cdel.at(j) );
+					cdelTemp.erase( cdelTemp.begin() + j - rm );
+					rm++;
+					}
+				}
+			cdel = cdelTemp;
+			cdelTemp.clear();
+
+			current = currentTemp;
+			currentTemp.clear();
 
 			p++;
 			csum = csum + clusnums[p];
@@ -165,4 +208,4 @@ void getLinkDensities(int *ma, int *mb, int *ea, int *eb, int *numedg, int *clus
 
 
 
-	
+

@@ -77,7 +77,7 @@ void compressRow(vector<float> &v)
 	}
 
 
-void hclustLinkComm(int *numedg, int *rowlen, float *heights, int *hca, int *hcb, bool *carriageret, bool *verbose)
+void hclustLinkComm(int *numedg, int *rowlen, float *heights, int *hca, int *hcb, bool *verbose)
 	{
 	
 	int row, col, numM = 0, numedgU = *numedg, perc = 0;
@@ -139,17 +139,7 @@ void hclustLinkComm(int *numedg, int *rowlen, float *heights, int *hca, int *hcb
 		if(*verbose){		
 			prog = (numM+0.0)/(*numedg-2)*100;
 
-			if(*carriageret){
-				Rprintf("   Hierarchical clustering of edges... %3.2f%\r",prog);
-			}else{
-				if(numM == 0){
-					Rprintf("   Hierarchical clustering of edges...\r\n");
-					}
-				if(prog >= perc){
-					Rprintf("|");
-					perc++;
-					}
-				}
+			Rprintf("\r   Hierarchical clustering of edges... %3.2f%%",prog);
 
 			R_FlushConsole();
 			R_ProcessEvents();

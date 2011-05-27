@@ -53,6 +53,10 @@ This approach is greatly enhanced by clustering the links between nodes, rather 
 
 The R package {\tt linkcomm} \citep{kalinka&tomancak2011} implements the algorithm proposed by \cite{ahnetal2010}. Similarities between links that share a node are assigned using the Jaccard coefficient and these similarities are then used to hierarchically cluster the links. The resulting dendrogram is cut at a point that maximises the density of links within the clusters after normalizing against the maximum and minimum numbers of links possible in each cluster.
 
+<<echo = FALSE, eval = FALSE>>=
+source("load_linkcomm.R")
+source("load_OCG.R")
+@
 
 \section{Quick start}
 
@@ -64,7 +68,7 @@ install.packages("linkcomm")
 
 To load {\tt linkcomm} into your current R session:
 
-<<results = hide>>=
+<<eval = TRUE>>=
 library(linkcomm)
 @
 
@@ -156,6 +160,13 @@ print(lc)
 \caption{Visualization of link communities using graphs. The panel on the left shows a Spencer circle layout \citep{spencer2010}, while the panel on the right shows a Fruchterman-Reingold layout. In both graphs, we show only the nodes that belong to 3 or more communities. Numbers around the circumference of the circle refer to community IDs.}\label{graphs}
 \end{figure}
 
+\begin{figure}[!ht]
+\advance\leftskip -3cm
+\centerline{\includegraphics[width=4.5in]{nodepie_linkcomm.pdf}}
+
+\caption{Visualization of link communities using node pies. The fraction of the total number of edges that a node has in each community is depicted using a pie chart.}\label{nodepies}
+\end{figure}
+
 
 \subsection{Visualizing link communities}
 
@@ -171,6 +182,13 @@ plot(lc, type = "graph", layout = "spencer.circle")
 <<eval = FALSE>>=
 plot(lc, type = "graph", layout = "spencer.circle", shownodesin = 3)
 @
+
+\noindent It's also possible to visualize node membership to different communities using node pies, in which the relative fraction of edges a node has in each community is depicted using a pie chart (Fig. \ref{nodepies}): 
+
+<<eval = FALSE>>=
+plot(lc, type = "graph", shownodesin = 2, node.pies = TRUE)
+@
+
 
 \noindent We can also visualize node community membership for the top-connected nodes using a community membership matrix (Fig. \ref{members}):
 
@@ -236,7 +254,7 @@ plot(lc, type = "graph", clusterids = c(9,11))
 \begin{figure}[!ht]
  \centering
 \advance\leftskip -2.5cm
-<<fig = TRUE, echo = FALSE>>=
+<<fig = TRUE, echo = FALSE, results = hide >>=
 plot(lc, type = "graph", clusterids = c(9,11), frame = TRUE)
 @
 \caption{Nested community structure revealed by {\tt linkcomm}. YML098W, YCR042C, and YML114C belong to both communities.}\label{nested}
@@ -488,11 +506,11 @@ Several other options are available and are described in {\tt ?plotLinkCommGraph
 OCG clusters can be extracted from networks arranged as an edge list, either directly from a file or from a data frame or matrix within R.
 
 <<results = hide>>=
-oc <- getOCG.clusters(karate)
+oc <- getOCG.clusters(lesmiserables)
 @
 
 <<echo=FALSE>>=
-cat("Calculating Initial class System....Done\nNb. of classes 24\nNb. of edges not within the classes 13\nNumber of initial classes 24\nRunning....\nRemaining classes: None\nReading OCG data...\nExtracting cluster sizes... 100%\n")
+cat("Calculating Initial class System....Done\nNb. of classes 43\nNb. of edges not within the classes 19\nNumber of initial classes 43\nRunning....\nRemaining classes: None\nReading OCG data...\nExtracting cluster sizes... 100%\n")
 @
 
 The algorithm returns an object of class {\tt OCG}. Contained within this object are the clusters together with all the information necessary for visualizing and analysing them further (see {\tt ?getOCG.clusters} for the elements of the {\tt OCG} object). A summary of this object can be printed to the screen:
@@ -504,13 +522,13 @@ print(oc)
 In the OCG algorithm, nodes and not edges belong to communities, and these can be visualized by depicting node community membership according to the number of edges a node shares within each community (see Figure \ref{OCGfig}):
 
 <<eval=FALSE>>=
-plot(oc, type = "graph", scale.vertices = 0.1)
+plot(oc, type = "graph", shownodesin = 7, scale.vertices = 0.1)
 @
 
 
 \begin{figure}[!ht]
  \centering
-\centerline{\includegraphics[width=8in]{OCG_graph.pdf}}
+\centerline{\includegraphics[width=6.5in]{ocg_lesmis.pdf}}
 \caption{Visualizing OCG clusters.}
 \label{OCGfig}
 \end{figure}
