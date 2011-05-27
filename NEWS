@@ -4,6 +4,19 @@ Author: Alex T. Kalinka (alex.t.kalinka@gmail.com).
 
 
 
+linkcomm 1.0-5
+==============
+
+- Added functions "getOCG.clusters", "plot.OCG", "read.OCG", "print.OCG", "numberEdgesIn", and "which.communities" to enable a port of the Overlapping Cluster Generator (OCG) algorithm into the linkcomm package.
+
+- Fixed a bug that prevented linkcomm summary plots from rendering correctly on different sized graphics devices.
+
+- Updated the vignette documentation to include information on the OCG algorithm and how to use it.
+
+- Changed dependency from "igraph" to "igraph0" to avoid incompatibilites, and included "utils" in the imported package list.
+
+
+
 linkcomm 1.0-4
 ==============
 

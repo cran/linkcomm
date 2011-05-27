@@ -1,8 +1,11 @@
-# Miscellaneous functions for "linkcomm".
-#
-# Author: Alex T. Kalinka (alex.t.kalinka@gmail.com)
-#
-# See: Ahn et al. (2010). Link communities reveal multiscale complexity in networks. Nature 466:761-765.
+##########################################################################################################
+# Miscellaneous functions for "linkcomm".                                                                #
+#                                                                                                        #
+# Author: Alex T. Kalinka (alex.t.kalinka@gmail.com)                                                     #
+#                                                                                                        #
+# See: Ahn et al. (2010). Link communities reveal multiscale complexity in networks. Nature 466:761-765. #
+#                                                                                                        #
+##########################################################################################################
 
 
 print.linkcomm <- function(x, ...)
@@ -520,8 +523,11 @@ getNodesIn <- function(x, clusterids = 1, type = "names")
 
 
 getEdgesIn <- function(x, clusterids = 1, nodes = NULL, all = FALSE)
-	# x is a "linkcomm" object.
+	# x is a "linkcomm" or "OCG" object.
 	{
+	cl <- class(x)
+	switch(cl,
+		linkcomm = {
 	if(is.null(nodes)==TRUE){
 		edges <- x$clusters[clusterids]
 		return(unlist(edges))
@@ -538,6 +544,20 @@ getEdgesIn <- function(x, clusterids = 1, nodes = NULL, all = FALSE)
 			return(unique(edges))
 			}
 		}
+		},
+		OCG = {
+	nodes <- unique(x$nodeclusters[x$nodeclusters[,2]%in%clusterids,1])
+	if(all){
+		eids <- 1:nrow(x$edgelist)
+		edges <- c(eids[x$edgelist[,1]%in%nodes],eids[x$edgelist[,2]%in%nodes])
+		return(unique(edges))
+	}else{	# Only interactions between nodes within the community.
+		eids <- 1:nrow(x$edgelist)
+		edges <- intersect(eids[x$edgelist[,1]%in%nodes],eids[x$edgelist[,2]%in%nodes])
+		return(edges)
+		}
+		}
+		)
 	}
 
 

@@ -23,13 +23,15 @@ Alex T. Kalinka \email{alex.t.kalinka@gmail.com}
 \references{
 Ahn, Y.Y., Bagrow, J.P., and Lehmann, S. (2010). Link communities reveal multiscale complexity in networks. \emph{Nature} \bold{466}, 761-764.
 
+Becker, E., Robisson, B., Chapple, C.E., Guenoche, A. and Brun, C. (2012) Multifunctional proteins revealed by overlapping clustering in protein interaction network. \emph{Bioinformatics} \bold{28}, 84-90.
+
 Kalinka, A.T. and Tomancak, P. (2011). linkcomm: an R package for the generation, visualization, and analysis of link communities in networks of arbitrary size and type. \emph{Bioinformatics} \bold{27}, 2011-2012.
 
 Spencer, R. (2010). \url{http://scaledinnovation.com/analytics/communities/comlinks.html}
 }
 
 \seealso{
-\code{\link{getLinkCommunities}}, \code{\link{plot.linkcomm}}, \code{\link{pp_rnapol}}, \code{\link{lesmiserables}}, \code{\link{karate}}, \code{\link{weighted}}, \code{\link{igraph}}, \code{\link{RColorBrewer}}, \code{\link{grid}}
+\code{\link{getLinkCommunities}}, \code{\link{getOCG.clusters}}, \code{\link{plot.linkcomm}}, \code{\link{pp_rnapol}}, \code{\link{lesmiserables}}, \code{\link{karate}}, \code{\link{weighted}}, \code{\link{igraph}}, \code{\link{RColorBrewer}}, \code{\link{grid}}
 }
 \examples{
 ## Generate graph and extract link communities.

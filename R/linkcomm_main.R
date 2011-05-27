@@ -1,13 +1,15 @@
-# Function(s) to extract link communitites in directed, undirected, weighted, or unweighted networks so that we can cluster nodes, allowing them to belong to multiple different communities.
-#
-# Author: Alex T. Kalinka (alex.t.kalinka@gmail.com)
-#
-# See: Ahn et al. (2010). Link communities reveal multiscale complexity in networks. Nature 466:761-765.
+#########################################################################################################################################################################
+# Function(s) to extract link communitites in directed, undirected, weighted, or unweighted networks so that we can cluster nodes, allowing them to belong to multiple  # different communities.                                                                                                                                                  #
+#                                                                                                                                                                       #
+# Author: Alex T. Kalinka   	 (alex.t.kalinka@gmail.com)                                                                                                                    
+#                                                                                                                                                                       #
+# See: Ahn et al. (2010). Link communities reveal multiscale complexity in networks. Nature 466:761-765.                                                                
+#                                                                                                                                                                       #
+#########################################################################################################################################################################
 
 
 .onLoad <- function(lib, pkg) 
 	{
-	require(utils)
 	packageStartupMessage("\nWelcome to linkcomm version ",packageDescription(pkg)$Version,"\n\nFor a step-by-step guide to using linkcomm functions:\n   > vignette(topic = \"linkcomm\", package = \"linkcomm\")\nTo run an interactive demo:\n   > demo(topic = \"linkcomm\", package = \"linkcomm\")\nTo cite, see:\n   > citation(\"linkcomm\")\nNOTE: To use linkcomm, you require read and write permissions in the current directory (see: help(\"getwd\"), help(\"setwd\"))\n")
 	}
 
@@ -120,8 +122,14 @@ getLinkCommunities <- function(x, hcmethod = "average", edglim = 10^4, directed 
 		if(verbose){
 			cat("\n   Hierarchical clustering of edges...")
 			}
+		#if(hcmethod=="energy"){
+		#	hcedges <- energy.hclust(distobj)
+		#}else{
+		#	hcedges <- hclust(distobj, method = hcmethod)
+		#	}
 		hcedges <- hclust(distobj, method = hcmethod)
 		hcedges$order <- rev(hcedges$order)
+		rm(distobj)
 		if(verbose){cat("\n")}
 		#return(hcedges)
 	}else{
