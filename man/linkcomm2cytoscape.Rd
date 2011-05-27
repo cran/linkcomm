@@ -29,8 +29,9 @@ Cytoscape is an open source platform for complex-network analysis and visualizat
 Used for its side-effect of writing an edge attribute file to disk.
 }
 \references{
-Cline, M.S. et al. (2007). Integration of biological networks and gene expression data using Cytoscape. Nat Protoc 2:2366-2382.\cr
-Kalinka, A.T. and Tomancak, P. (2011). linkcomm: an R package for the generation, visualization, and analysis of link communities in networks of arbitrary size and type. Bioinformatics, doi: 10.1093/bioinformatics/btr311.
+Cline, M.S. et al. (2007). Integration of biological networks and gene expression data using Cytoscape. \emph{Nat Protoc} \bold{2}, 2366-2382.
+
+Kalinka, A.T. and Tomancak, P. (2011). linkcomm: an R package for the generation, visualization, and analysis of link communities in networks of arbitrary size and type. \emph{Bioinformatics} \bold{27}, 2011-2012.
 }
 \author{
 Alex T. Kalinka \email{alex.t.kalinka@gmail.com}

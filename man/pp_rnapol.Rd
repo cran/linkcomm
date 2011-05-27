@@ -11,7 +11,7 @@ pp_rnapol
 \format{Data frame with 2 columns.}
 \source{\url{http://interactome.dfci.harvard.edu}}
 \references{
-Yu, H., \emph{et al}. (2008). High-quality binary protein interaction map of the yeast interactome network. Science 322, 104-110.
+Yu, H., \emph{et al}. (2008). High-quality binary protein interaction map of the yeast interactome network. \emph{Science} \bold{322}, 104-110.
 }
 \keyword{datasets}
 

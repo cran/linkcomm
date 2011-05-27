@@ -24,7 +24,7 @@ Further arguments passed to or from other methods.
 Prints summary data to the screen.
 }
 \references{
-Kalinka, A.T. and Tomancak, P. (2011). linkcomm: an R package for the generation, visualization, and analysis of link communities in networks of arbitrary size and type. Bioinformatics, doi: 10.1093/bioinformatics/btr311.
+Kalinka, A.T. and Tomancak, P. (2011). linkcomm: an R package for the generation, visualization, and analysis of link communities in networks of arbitrary size and type. \emph{Bioinformatics} \bold{27}, 2011-2012.
 }
 \author{
 Alex T. Kalinka \email{alex.t.kalinka@gmail.com}

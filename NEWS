@@ -3,6 +3,18 @@ A revision history for the R package 'linkcomm'.
 Author: Alex T. Kalinka (alex.t.kalinka@gmail.com).
 
 
+
+linkcomm 1.0-3
+==============
+
+- Fixed bug that prevented partition density summary plots from being saved correctly as PDFs or other file types.
+
+- Updated citation information.
+
+- Updated documentation.
+
+
+
 linkcomm 1.0-2
 ==============
 

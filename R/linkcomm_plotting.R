@@ -42,8 +42,8 @@ plotLinkCommSumm <- function(x, col = TRUE, pal = brewer.pal(9,"Set1"), right = 
 		assign("left",0,environment(.COL))
 		}
 	if(is.null(x$dendr) && right){ dd <- rev(dd)}
-	grid.newpage()
-	#plot.new()
+	#grid.newpage()
+	plot.new()
 	# Set margin.
 	margin<-unit(1,"lines")
 	pushViewport(viewport(x=margin,y=margin,width=unit(1,"npc")-2*margin,height=unit(1,"npc")-2*margin,just=c("left","bottom")))
@@ -52,7 +52,7 @@ plotLinkCommSumm <- function(x, col = TRUE, pal = brewer.pal(9,"Set1"), right = 
 	pushViewport(viewport(layout.pos.row=1:3,layout.pos.col=1))
 	#return(gridPLT())
 	gpl <- c(0.009,0.71,0.13,0.902)
-	par(oma=rep(0,4),mar=rep(0,4),ann=FALSE,omd=c(0,1,0,1),pty="m",mgp=rep(0,3),plt = gpl,xpd=NA)
+	par(oma=rep(0,4),mar=rep(0,4),ann=FALSE,omd=c(0,1,0,1),pty="m",mgp=rep(0,3),fig = gpl,xpd=NA,new=TRUE)
 	plot(dd,axes=FALSE,leaflab="none")
 	popViewport(1)
 	# Title.

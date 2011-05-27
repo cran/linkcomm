@@ -11,7 +11,7 @@ lesmiserables
 \format{Data frame with 2 columns.}
 \source{\url{http://wiki.gephi.org/index.php/Datasets}}
 \references{
-Knuth, D. E. (1993). The Stanford GraphBase: A Platform for Combinatorial Computing, Addison-Wesley, Reading, MA.
+Knuth, D. E. (1993). \emph{The Stanford GraphBase: A Platform for Combinatorial Computing}, Addison-Wesley, Reading, MA.
 }
 \keyword{datasets}
 

@@ -407,7 +407,7 @@ This will save an edge attribute file to ``linkcomms.ea'' in the current directo
 
 \bibitem[Evans and Lambiotte, 2009]{evans&lambiotte2009} Evans, T.S., and Lambiotte, R. (2009) Line graphs, link partitions and overlapping communities. {\it Phys. Rev. E.}, {\bf 80}, 016105.
 
-\bibitem[Kalinka and Tomancak, 2011]{kalinka&tomancak2011} Kalinka, A.T., and Tomancak, P. (2011) linkcomm: an R package for the generation, visualization, and analysis of link communities in networks of arbitrary size and type. {\it Bioinformatics}, doi: 10.1093/bioinformatics/btr311.
+\bibitem[Kalinka and Tomancak, 2011]{kalinka&tomancak2011} Kalinka, A.T., and Tomancak, P. (2011) linkcomm: an R package for the generation, visualization, and analysis of link communities in networks of arbitrary size and type. {\it Bioinformatics}, {\bf 27}, 2011-2012.
 
 \bibitem[Radicchi {\it et al}., 2004]{radicchietal2004} Raddichi, F., \emph{et al}. (2004) Defining and identifying communities in networks. {\it Proc. Natl Acad. Sci USA}, {\bf 101}, 2658-2663.
 
