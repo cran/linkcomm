@@ -4,6 +4,26 @@ Author: Alex T. Kalinka (alex.t.kalinka@gmail.com).
 
 
 
+linkcomm 1.0-7
+==============
+
+- Changed dependency from "igraph0" to "igraph".
+
+- Added support for bi-partite networks to "getLinkCommunities".
+
+- Added argument "use.all.edges" to "getLinkCommunities" to allow edge similarities to be calculated for all pairs of edges, not just those sharing a node.
+
+- Added function "linkcomm2clustnsee" to enable the export of clusters to Cytoscape and the Clust&See plug-in.
+
+- Added function "integer.edgelist" to enable conversion of networks into integer edgelists.
+
+- Fixed a bug in "newLinkCommsAt" which prevented the $edges output from being modified.
+
+- Added "fastcluster" to the Suggests field.
+
+- Changed function "getLinkDensities" to "LinkDensities".
+
+
 
 linkcomm 1.0-6
 ==============

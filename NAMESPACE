@@ -1,11 +1,11 @@
 import(grid, utils)
 
-export(corLinkcommCentrality, cutDendrogramAt, edge.duplicates, getAllNestedComm, getClusterRelatedness, getCommunityCentrality, getCommunityConnectedness, getCommunityMatrix, getEdgesIn, getLinkCommunities, getLinkCommDensities, getNestedHierarchies, getNodesIn, getOCG.clusters, graph.feature, layout.spencer.circle, linkcomm2cytoscape, newLinkCommsAt, newLinkCommsAt, numberEdgesIn, orderCommunities, plotLinkCommDend, plotLinkCommGraph, plotLinkCommMembers, plotLinkCommSummComm, plotLinkCommSumm, plotOCGraph, read.OCG, which.communities)
+export(corLinkcommCentrality, cutDendrogramAt, edge.duplicates, getAllNestedComm, getClusterRelatedness, getCommunityCentrality, getCommunityConnectedness, getCommunityMatrix, getEdgesIn, getLinkCommunities, LinkDensities, getNestedHierarchies, getNodesIn, getOCG.clusters, graph.feature, layout.spencer.circle, linkcomm2cytoscape, newLinkCommsAt, newLinkCommsAt, numberEdgesIn, orderCommunities, plotLinkCommDend, plotLinkCommGraph, plotLinkCommMembers, plotLinkCommSummComm, plotLinkCommSumm, plotOCGraph, read.OCG, which.communities, integer.edgelist, linkcomm2clustnsee)
 
 S3method(plot, linkcomm)
 S3method(print, linkcomm)
 S3method(plot, OCG)
 S3method(print, OCG)
 
-useDynLib(linkcomm, edgeDuplicates, getEdgeSimilarities, hclustLinkComm, hclustPlotOrder, getLinkDensities, cutTreeAt, getJaccards, getOCGclusters, readOCG)
+useDynLib(linkcomm, edgeDuplicates, getEdgeSimilarities, hclustLinkComm, hclustPlotOrder, getLinkDensities, cutTreeAt, getJaccards, getOCGclusters, readOCG, getEdgeSimilarities_all)
 

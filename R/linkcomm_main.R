@@ -1,7 +1,7 @@
 ##########################################################
 # Function(s) to extract link communitites from		 #
-#     directed, undirected, weighted, or unweighted      #
-#     networks.						 #
+#     directed, undirected, weighted, unweighted, or     #
+#     bipartite networks.				 #
 # The main algorithms are C++ functions available in     #
 #     the R package source.				 #
 # 							 #
@@ -20,9 +20,28 @@
 ##########################################################
 
 
-.onLoad <- function(lib, pkg) 
+.onAttach <- function(lib, pkg) 
 	{
 	packageStartupMessage("\nWelcome to linkcomm version ",packageDescription(pkg)$Version,"\n\nFor a step-by-step guide to using linkcomm functions:\n   > vignette(topic = \"linkcomm\", package = \"linkcomm\")\nTo run an interactive demo:\n   > demo(topic = \"linkcomm\", package = \"linkcomm\")\nTo cite, see:\n   > citation(\"linkcomm\")\nNOTE: To use linkcomm, you require read and write permissions in the current directory (see: help(\"getwd\"), help(\"setwd\"))\n")
+	}
+
+
+integer.edgelist <- function(network)
+	# Returns an edge list with integer numbers replacing elements of the network.
+	{
+	if(!is.character(network)){
+		cn <- cbind(as.character(network[,1]),as.character(network[,2]))
+	}else{
+		cn <- network
+		}
+	nodes <- unique(as.character(t(cn)))
+	ids <- seq(nodes)
+	names(ids) <- nodes
+	g <- matrix(ids[t(cn)],nrow(cn),ncol(cn),byrow=TRUE)
+	ret <- list()
+	ret$edges <- g
+	ret$nodes <- ids
+	return(ret)
 	}
 
 
@@ -30,8 +49,7 @@ edge.duplicates <- function(network, verbose = TRUE)
 	# Finds and removes loops, duplicate edges, and bi-directional edges.
 	{
 	xx <- cbind(as.character(network[,1]),as.character(network[,2]))
-	x <- graph.edgelist(xx, directed = FALSE)
-	edges <- cbind(x[[3]],x[[4]]) # Edges with numerical node IDs
+	edges <- integer.edgelist(network)$edges
 	ne <- nrow(edges)
 	loops <- rep(0,ne)
 	dups <- rep(0,ne)
@@ -42,17 +60,14 @@ edge.duplicates <- function(network, verbose = TRUE)
 
 	loops <- which(out$loops == 1)
 	dups <- which(out$dups == 1)
-
 	inds <- unique(c(loops,dups))
 	ret <- list()
 	ret$inds <- inds
-
 	if(length(inds)>0){
 		ret$edges <- xx[-inds,]
 	}else{
 		ret$edges <- xx
 		}
-
 	if(verbose){
 		if(length(loops)>0){
 			cat("   Found and removed ",length(loops)," loop(s)\n",sep="")
@@ -61,21 +76,31 @@ edge.duplicates <- function(network, verbose = TRUE)
 			cat("   Found and removed ",length(dups)," duplicate edge(s)\n",sep="")
 			}
 		}
-
 	return(ret)
-
 	}
 
 
-getLinkCommunities <- function(network, hcmethod = "average", edglim = 10^4, directed = FALSE, dirweight = 0.5, dist = NULL, plot = TRUE, check.duplicates = TRUE, removetrivial = TRUE, verbose = TRUE) 
+getLinkCommunities <- function(network, hcmethod = "average", use.all.edges = FALSE, edglim = 10^4, directed = FALSE, dirweight = 0.5, bipartite = FALSE, dist = NULL, plot = TRUE, check.duplicates = TRUE, removetrivial = TRUE, verbose = TRUE) 
 	# network is an edge list. Nodes can be ASCII names or integers, but are always treated as character names in R.
 	# If plot is true (default), a dendrogram and partition density score as a function of dendrogram height are plotted side-by-side.
 	# When there are more than "edglim" edges, hierarchical clustering is carried out via temporary files written to disk using compiled C++ code.
 	{
+
+	if(is.character(network) && !is.matrix(network)){
+		if(file.access(network) == -1){
+			stop(cat("\nfile not found: \"",network,"\"\n",sep=""))
+		}else{
+			network <- read.table(file = network, header = FALSE)
+			}
+		}
 	x <- network
 	rm(network)
+
 	if(ncol(x)==3){
 		wt <- as.numeric(as.character(x[,3]))
+		if(length(which(is.na(wt)==TRUE))>0){
+			stop("\nedge weights must be numerical values\n")
+			}
 		x <- cbind(as.character(x[,1]),as.character(x[,2]))
 	}else if(ncol(x)==2){
 		x <- cbind(as.character(x[,1]),as.character(x[,2]))
@@ -96,12 +121,32 @@ getLinkCommunities <- function(network, hcmethod = "average", edglim = 10^4, dir
 		}
 
 	el <- x # Modified edge list returned to user.
-	len <- nrow(x) # Number of edges.
-	nnodes <- length(unique(c(as.character(x[,1]),as.character(x[,2])))) # Number of nodes.
+	rm(x)
+	len <- nrow(el) # Number of edges.
+	nnodes <- length(unique(c(as.character(el[,1]),as.character(el[,2])))) # Number of nodes.
 
-	x <- graph.edgelist(x, directed = directed) # Creates "igraph" object.
-	edges <- cbind(x[[3]],x[[4]]) # Edges with numerical node IDs.
+	intel <- integer.edgelist(el) # Edges with numerical node IDs.
+	edges <- intel$edges
+	node.names <- names(intel$nodes)
+	numnodes <- length(node.names)
 
+	if(bipartite){
+		# Check that network is bipartite.
+		big <- graph.edgelist(as.matrix(el), directed = directed)
+		bip.test <- bipartite.mapping(big)
+		if(!bip.test$res){
+			stop("\nnetwork is not bi-partite; change bipartite argument to FALSE\n")
+			}
+		bip <- rep(1,length(bip.test$type))
+		bip[which(bip.test$type==FALSE)] <- 0
+		names(bip) <- V(big)$name
+		bip <- bip[match(node.names, names(bip))]
+		rm(big, bip.test)
+	}else{
+		bip <- 0
+		}
+
+	rm(intel)
 
 	# Switch depending on size of network.
 	if(len <= edglim){
@@ -109,7 +154,11 @@ getLinkCommunities <- function(network, hcmethod = "average", edglim = 10^4, dir
 		if(is.null(dist)){
 			emptyvec <- rep(1,(len*(len-1))/2)
 			if(!is.null(wt)){ weighted <- TRUE}else{ wt <- 0; weighted <- FALSE}
-			dissvec <- .C("getEdgeSimilarities",as.integer(edges[,1]),as.integer(edges[,2]),as.integer(len),rowlen=integer(1),weights=as.double(wt),as.logical(directed),as.double(dirweight),as.logical(weighted),as.logical(disk), dissvec = as.double(emptyvec), as.logical(verbose))$dissvec
+			if(!use.all.edges){
+				dissvec <- .C("getEdgeSimilarities",as.integer(edges[,1]),as.integer(edges[,2]),as.integer(len),rowlen=integer(1),weights=as.double(wt),as.logical(directed),as.double(dirweight),as.logical(weighted),as.logical(disk), dissvec = as.double(emptyvec), as.logical(bipartite), as.logical(verbose))$dissvec
+			}else{
+				dissvec <- .C("getEdgeSimilarities_all",as.integer(edges[,1]),as.integer(edges[,2]),as.integer(len),as.integer(numnodes),rowlen=integer(1),weights=as.double(wt),as.logical(FALSE),as.double(dirweight),as.logical(weighted),as.logical(disk), dissvec = as.double(emptyvec), as.logical(bipartite), as.logical(verbose))$dissvec
+				}
 			distmatrix <- matrix(1,len,len)
 			distmatrix[lower.tri(distmatrix)] <- dissvec
 			colnames(distmatrix) <- 1:len
@@ -142,8 +191,11 @@ getLinkCommunities <- function(network, hcmethod = "average", edglim = 10^4, dir
 	}else{
 		disk <- TRUE
 		if(!is.null(wt)){ weighted <- TRUE}else{ wt <- 0; weighted <- FALSE}
-		rowlen <- .C("getEdgeSimilarities",as.integer(edges[,1]),as.integer(edges[,2]),as.integer(len),rowlen=integer(len-1),weights=as.double(wt),as.logical(directed),as.double(dirweight),as.logical(weighted),as.logical(disk), dissvec = double(1), as.logical(verbose))$rowlen
-
+		if(!use.all.edges){
+			rowlen <- .C("getEdgeSimilarities",as.integer(edges[,1]),as.integer(edges[,2]),as.integer(len),rowlen=integer(len-1),weights=as.double(wt),as.logical(directed),as.double(dirweight),as.logical(weighted),as.logical(disk), dissvec = double(1), as.logical(bipartite), as.logical(verbose))$rowlen
+		}else{
+			rowlen <- .C("getEdgeSimilarities_all",as.integer(edges[,1]),as.integer(edges[,2]),as.integer(len),as.integer(numnodes),rowlen=integer(len-1),weights=as.double(wt),as.logical(FALSE),as.double(dirweight),as.logical(weighted),as.logical(disk), dissvec = double(1), as.logical(bipartite), as.logical(verbose))$rowlen
+			}
 		if(verbose){cat("\n")}
 		hcobj <- .C("hclustLinkComm",as.integer(len),as.integer(rowlen),heights = single(len-1),hca = integer(len-1),hcb = integer(len-1), as.logical(verbose))
 		if(verbose){cat("\n")}
@@ -162,7 +214,7 @@ getLinkCommunities <- function(network, hcmethod = "average", edglim = 10^4, dir
 	hh <- unique(round(hcedges$height, digits = 5)) # Round to 5 digits to prevent numerical instability affecting community formation.
 	countClusters <- function(x,ht){return(length(which(ht==x)))}
 	clusnums <- sapply(hh, countClusters, ht = round(hcedges$height, digits = 5)) # Number of clusters at each height.
-	ldlist <- .C("getLinkDensities",as.integer(hcedges$merge[,1]), as.integer(hcedges$merge[,2]), as.integer(edges[,1]), as.integer(edges[,2]), as.integer(len), as.integer(clusnums), pdens = double(length(hh)), heights = as.double(hh), pdmax = double(1), csize = integer(1), as.logical(removetrivial), as.logical(verbose))
+	ldlist <- .C("getLinkDensities",as.integer(hcedges$merge[,1]), as.integer(hcedges$merge[,2]), as.integer(edges[,1]), as.integer(edges[,2]), as.integer(len), as.integer(clusnums), pdens = double(length(hh)), heights = as.double(hh), pdmax = double(1), csize = integer(1), as.logical(removetrivial), as.logical(bipartite), as.integer(bip), as.logical(verbose))
 	pdens <- c(0,ldlist$pdens)
 	heights <- c(0,hh)
 	pdmax <- ldlist$pdmax
@@ -200,7 +252,7 @@ getLinkCommunities <- function(network, hcmethod = "average", edglim = 10^4, dir
 			flush.console()
 			}
 		ee <- rbind(ee,cbind(el[clus[[i]],],i))
-		nodes <- V(x)$name[(unique(c(edges[clus[[i]],]))+1)]
+		nodes <- node.names[unique(c(edges[clus[[i]],]))]
 		both <- cbind(nodes,rep(i,length(nodes)))
 		ecn <- rbind(ecn,both)
 		}
@@ -241,7 +293,7 @@ getLinkCommunities <- function(network, hcmethod = "average", edglim = 10^4, dir
 	pdplot <- cbind(heights,pdens)
 
 	# Add nodeclusters of size 0.
-	missnames <- setdiff(V(x)$name,names(oo))
+	missnames <- setdiff(node.names,names(oo))
 	m <- rep(0,length(missnames))
 	names(m) <- missnames
 	oo <- append(oo,m)
@@ -257,9 +309,10 @@ getLinkCommunities <- function(network, hcmethod = "average", edglim = 10^4, dir
 	all$edges <- ee # Edges and the clusters they belong to, arranged so we can easily put them into an edge attribute file for Cytoscape.
 	all$numclusters <- sort(oo,decreasing=TRUE) # The number of clusters that each node belongs to (named vector where the names are node names).
 	all$clustsizes <- ss # Cluster sizes sorted largest to smallest (named vector where names are cluster IDs).
-	all$igraph <- x # igraph graph.
+	all$igraph <- graph.edgelist(el, directed = directed) # igraph graph.
 	all$edgelist <- el # Edge list.
 	all$directed <- directed # Logical indicating if graph is directed or not.
+	all$bipartite <- bipartite # Logical indicating if graph is bipartite or not.
 
 	class(all) <- "linkcomm"
 

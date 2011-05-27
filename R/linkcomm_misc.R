@@ -19,7 +19,7 @@ print.linkcomm <- function(x, ...)
 	# S3 method for generic function "print".
 	# x is a "linkcomm" object.
 	{
-	cat("   *** Summary ***\n   Number of nodes = ",x$numbers[2],"\n   Number of edges = ",x$numbers[1],"\n   Number of communities = ",x$numbers[3],"\n   Maximum partition density = ",max(x$pdens[,2]),"\n   Number of nodes in largest cluster = ",x$clustsizes[1],"\n   Directed: ",x$directed,"\n   Hclust method: ",x$hclust$method,"\n")
+	cat("   *** Summary ***\n   Number of nodes = ",x$numbers[2],"\n   Number of edges = ",x$numbers[1],"\n   Number of communities = ",x$numbers[3],"\n   Maximum partition density = ",max(x$pdens[,2]),"\n   Number of nodes in largest cluster = ",x$clustsizes[1],"\n   Directed: ",x$directed, "\n   Bi-partite: ",x$bipartite, "\n   Hclust method: ",x$hclust$method,"\n")
 	}
 
 
@@ -183,7 +183,7 @@ corLinkcommCentrality <- function(x, centrality = "degree", type = "commweight",
 	}else if(centrality == "betweenness"){
 		cn <- betweenness(x$igraph, v=V(x$igraph))
 	}else if(centrality == "closeness"){
-		cn <- closeness(x$igraph, v=V(x$igraph))
+		cn <- closeness(x$igraph, vids=V(x$igraph))
 	}else if(centrality == "constraint"){
 		cn <- constraint(x$igraph,nodes=V(x$igraph))
 	}
@@ -247,7 +247,7 @@ orderCommunities <- function(x, clusterids = 1:x$numbers[3], verbose = TRUE)
 	}
 
 
-getLinkCommDensities <- function(x, clusterids = 1:x$numbers[3])
+LinkDensities <- function(x, clusterids = 1:x$numbers[3])
 	# Returns the link densities of the communities in "x".
 	# x is a "linkcomm" object.
 	{
@@ -437,7 +437,7 @@ newLinkCommsAt <- function(x, cutat = 0.5)
 	cat("\n")
 	file.remove("linkcomm_metaclusters.txt")
 
-	edges <- cbind(x$igraph[[3]],x$igraph[[4]])
+	edges <- integer.edgelist(x$edgelist)$edges
 
 	# Extract nodes for each edge cluster.
 	ecn <- data.frame()
@@ -447,11 +447,12 @@ newLinkCommsAt <- function(x, cutat = 0.5)
 		cat(mes,"\r")
 		flush.console()
 		ee <- rbind(ee,cbind(x$edgelist[clus[[i]],],i))
-		nodes <- V(x$igraph)$name[(unique(c(edges[clus[[i]],]))+1)]
+		nodes <- V(x$igraph)$name[(unique(c(edges[clus[[i]],])))]
 		both <- cbind(nodes,rep(i,length(nodes)))
 		ecn <- rbind(ecn,both)
 		}
 	colnames(ecn) <- c("node","cluster")
+	colnames(ee) <- c("node1","node2","cluster")
 
 	# Extract the node-size of each edge cluster and order largest to smallest.
 	ss <- NULL
@@ -486,6 +487,7 @@ newLinkCommsAt <- function(x, cutat = 0.5)
 	x$numbers[3] <- length(clus)
 	x$nodeclusters <- ecn
 	x$clusters <- clus
+	x$edges <- ee
 	x$pdmax <- cutat
 	x$numclusters <- sort(oo,decreasing=TRUE)
 	x$clustsizes <- ss

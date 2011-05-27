@@ -146,7 +146,7 @@ int compDoubles(double a, double b)
 
 
 
-void getOCGclusters(char **file, int *ICS, int *FM, int *MCC, int *CCS, int *MC, int *verb, int *success){
+void getOCGclusters(char **file, int *ICS, int *FM, int *MCC, int *CCS, int *MC, int *numnodes, int *verb, int *success){
 
 
   int   i,j,k, ii,jj,kk, flag, NL, cl1, cl2, k1, k2, NbPos, MCV, ko, mycomp; 
@@ -165,7 +165,7 @@ void getOCGclusters(char **file, int *ICS, int *FM, int *MCC, int *CCS, int *MC,
   #define MaxProt 10000 // Maximum number of vertices (Proteins)
   #define SupCar 21
 
-  char Et[MaxProt][SupCar];
+  char Et[*numnodes][SupCar];
 
   // Set up user-defined variables.
   strcpy(FichE, *file);
@@ -295,14 +295,14 @@ void getOCGclusters(char **file, int *ICS, int *FM, int *MCC, int *CCS, int *MC,
 	    if (strcmp(Ch1,Et[j]) == 0) { flag=0; strcpy(OldCh,Ch1); break; }
 	  if (flag){
 	strcpy(Et[N],Ch1); N++; 
-	      if (N==MaxProt) { Rprintf("Too many vertices > %d  ",MaxProt); return; }
+	      if (N==MaxProt) { Rprintf("warning: more than %d vertices; algorithm will take > 1 hour to run",MaxProt);}
 	    }	}
       flag=1;
       for (j=0; j < N; j++)
 	if (strcmp(Ch2,Et[j]) == 0) { flag=0; break; }
       if (flag){
 	strcpy(Et[N],Ch2); N++; 
-	  if (N==MaxProt) {  Rprintf("Too many vertices > %d  ",MaxProt); return; }
+	  if (N==MaxProt) {  Rprintf("warning: more than %d vertices; algorithm will take > 1 hour to run ",MaxProt);}
     	}
 
     }	

@@ -8,7 +8,7 @@ Generate Overlapping Cluster Generator (OCG) Communities
 This function generates communities based on the OCG algorithm.
 }
 \usage{
-getOCG.clusters(network, init.class.sys = 3, fusion.method = 0, max.class.card = 0, 
+getOCG.clusters(network, init.class.sys = 3, max.class.card = 0, 
                 cent.class.sys = 1, min.class = 2, verbose = TRUE, keep.out = FALSE)
 }
 
@@ -18,9 +18,6 @@ Either a character string naming the file containing the network as an edge list
 }
   \item{init.class.sys}{
 An integer number specifying the Initial Class System: 1 - Maximal Cliques, 2 - Edges, or 3 - Centered Cliques. Defaults to 3.
-}
-  \item{fusion.method}{
-A binary value specifying the fusion method: 0 - Fusion according to the average gain, or 2 - Fusion according to the total gain. Defaults to 0.
 }
   \item{max.class.card}{
 An integer number specifying the maximum allowed class cardinality. Defaults to 0, which indicates no constraint.
@@ -32,7 +29,7 @@ A binary value indicating the choice of class system for centered cliques: 0 - F
 An integer number specifying the minimum number of expected classes. Defaults to 2.
 }
   \item{verbose}{
-Logical, whether to display progress of the algorithm to the screen.
+Logical, whether to display progress of the algorithm to the screen. Defaults to TRUE.
 }
   \item{keep.out}{
 Logical, whether to keep the OCG partition intermediate file on disk or not. Defaults to FALSE.
@@ -55,6 +52,10 @@ Becker, E., Robisson, B., Chapple, C.E., Guenoche, A. and Brun, C. (2012) Multif
 }
 \author{
 Alain Guenoche (main algorithm), and ported into \R by Alex T. Kalinka \email{alex.t.kalinka@gmail.com}
+}
+\note{
+For optimal results, the input network must contain at least one connected component (a subgraph in which any two vertices are connected by a path, which is not connected to additional vertices in the supergraph).
+
 }
 
 \examples{

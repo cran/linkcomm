@@ -1,4 +1,5 @@
-/* Code to calculate edge similarities for hierarchical clustering of edges to produce link communities.
+/* Code to calculate edge similarities for hierarchical clustering of edges to produce link communities
+ *  when including all edges, not just those that share a node.
  * For undirected networks Jaccard coefficients will be calculated, for directed and/or weighted networks the Tanimoto coefficient.
  *
  * Author: Alex T. Kalinka (alex.t.kalinka@gmail.com)
@@ -27,65 +28,37 @@ extern "C" {
 using namespace std;
 
 
-void getNodeNeighbourhood(map<int, set<int> > &nN, map<int, map<int,double> > &wM, vector<int> &eA, vector<int> &eB, int nonSA, int nonSB, int *numedg, bool *weighted, double *weights, int which)
+void nodeNeighbourhood(map<int, set<int> > &nN, map<int, map<int,double> > &wM, vector<int> &eA, vector<int> &eB, int node, int *numedg, bool *weighted, double *weights)
 
 	{
 
-	int finda = 0, findab = 0, findb = 0, findba = 0, add;
+	int finda = 0, findb = 0, add;
 	bool end = FALSE, first = TRUE;
 
-	if(which == 1){
-		findab = *numedg;
-		findba = *numedg;
-	}else if(which == 2){
-		finda = *numedg;
-		findb = *numedg;
-		}
-
-	// Get first-order node neighbourhoods for the non-shared nodes.
+	// Get first-order node neighbourhood, and separately their weights (if applicable).
 	while(end == FALSE){
-		if(finda != *numedg && which == 0 || which == 1){
+		if(finda != *numedg){
 			if(first){add = 0;}else{add = finda+1;}
-			finda = find(eA.begin()+add, eA.end(), nonSA) - eA.begin();
+			finda = find(eA.begin()+add, eA.end(), node) - eA.begin();
 			if(finda != *numedg){
-				nN[nonSA].insert(eB.at(finda));
+				nN[node].insert(eB.at(finda));
 				if(*weighted){
-					wM[nonSA].insert( pair<int,double>(eB.at(finda), weights[finda]) );
+					wM[node].insert( pair<int,double>(eB.at(finda), weights[finda]) );
 					}
 				}
 			}
-		if(findb != *numedg && which == 0 || which == 1){
+		if(findb != *numedg){
 			if(first){add = 0;}else{add = findb+1;}
-			findb = find(eB.begin()+add, eB.end(), nonSA) - eB.begin();
+			findb = find(eB.begin()+add, eB.end(), node) - eB.begin();
 			if(findb != *numedg){
-				nN[nonSA].insert(eA.at(findb));
+				nN[node].insert(eA.at(findb));
 				if(*weighted){
-					wM[nonSA].insert( pair<int,double>(eA.at(findb), weights[findb]) );
-					}
-				}
-			}
-		if(findab != *numedg && which == 0 || which == 2){
-			if(first){add = 0;}else{add = findab+1;}
-			findab = find(eA.begin()+add, eA.end(), nonSB) - eA.begin();
-			if(findab != *numedg){
-				nN[nonSB].insert(eB.at(findab));
-				if(*weighted){
-					wM[nonSB].insert( pair<int,double>(eB.at(findab), weights[findab]) );
-					}
-				}
-			}
-		if(findba != *numedg && which == 0 || which == 2){
-			if(first){add = 0;}else{add = findba+1;}
-			findba =find(eB.begin()+add, eB.end(), nonSB) - eB.begin();
-			if(findba != *numedg){
-				nN[nonSB].insert(eA.at(findba));
-				if(*weighted){
-					wM[nonSB].insert( pair<int,double>(eA.at(findba), weights[findba]) );
+					wM[node].insert( pair<int,double>(eA.at(findb), weights[findb]) );
 					}
 				}
 			}
 
-		if(finda == *numedg && findb == *numedg && findab == *numedg && findba == *numedg){
+		if(finda == *numedg && findb == *numedg){
 			end = TRUE;
 		}else{
 			first = FALSE;
@@ -97,7 +70,7 @@ void getNodeNeighbourhood(map<int, set<int> > &nN, map<int, map<int,double> > &w
 
 
 
-void getDirectedWeights(map<int,float> &dW, set<int> &comm, vector<int> &eA, vector<int> &eB, int nonSA, int nonSB, int *numedg, double *dirw)
+void getDirectedWeights_all(map<int,float> &dW, set<int> &comm, vector<int> &eA, vector<int> &eB, int nonSA, int nonSB, int *numedg, double *dirw)
 	
 	{
 
@@ -157,11 +130,11 @@ void getDirectedWeights(map<int,float> &dW, set<int> &comm, vector<int> &eA, vec
 
 
 
-void getEdgeSimilarities(int *ea, int *eb, int *numedg, int *rowlen, double *weights, bool *directed, double *dirweight, bool *weighted, bool *disk, double *dissvec, bool *bipartite, bool *verbose)
+void getEdgeSimilarities_all(int *ea, int *eb, int *numedg, int *numnodes, int *rowlen, double *weights, bool *directed, double *dirweight, bool *weighted, bool *disk, double *dissvec, bool *bipartite, bool *verbose)
 
 	{
 
-	int i, j, finda, findab, findb, findba, add, which, perc = 0;
+	int i, j, k = 0, finda, findab, findb, findba, add, which, perc = 0;
 	int first = -1, last = -1, sum = 0, runn = 0;
 	double dotprod, absA, absB, numerat, denom, distm;
 	float prog;
@@ -175,17 +148,19 @@ void getEdgeSimilarities(int *ea, int *eb, int *numedg, int *rowlen, double *wei
 	set<int> nodesI;
 	set<int> nodesJ;
 	set<int> diff;
+	set<int> neighbFocal;
+	set<int> neighbOther;
 	set<int> neighbA;
 	set<int> neighbB;
 	set<int> common;
 	set<int> total;
 	set<int>::iterator sit;
 	map<int, set<int> > nodeNeighb;
-	map<int, set<int> >::iterator mitA;
-	map<int, set<int> >::iterator mitB;
 	map<int, map<int,double> > weightMap;
 	map<int,double> mapA;
 	map<int,double> mapB;
+	map<int,double> mapC;
+	map<int,double> mapD;
 	map<int,float> dirWeights;
 	vector<double> aI;
 	vector<double> aJ;
@@ -205,112 +180,84 @@ void getEdgeSimilarities(int *ea, int *eb, int *numedg, int *rowlen, double *wei
 		outfile.precision(7);
 		}
 
+	// Get first-order node neighbourhood for all nodes and hold in memory.
+	for(i = 1; i <= *numnodes; i++){
+		
+		if(*verbose){
+			prog = (i+0.0)/(*numnodes)*100;
+
+			Rprintf("\r   Calculating edge similarities for %d edges...1/2... %3.2f%%",*numedg,prog);
+
+			R_FlushConsole();
+			R_ProcessEvents();
+			}
+
+		nodeNeighbourhood(nodeNeighb, weightMap, edgeA, edgeB, i, numedg, weighted, weights);
+
+		}
+
+
 	// Loop through edges and calculate edge similarities.
 	for(i = 0; i < *numedg-1; i++){
 
 		if(*verbose){
 			prog = (i+0.0)/(*numedg-2)*100;
 
-			Rprintf("\r   Calculating edge similarities for %d edges... %3.2f%%",*numedg,prog);
+			Rprintf("\r   Calculating edge similarities for %d edges...2/2... %3.2f%%",*numedg,prog);
 
 			R_FlushConsole();
 			R_ProcessEvents();
 			}
 
-		row.assign(*numedg-1-i, 1);
-		end = FALSE; j = 0;
-		finda = 0; findb = 0; findab = 0; findba = 0;
-
-		// Find edges that share a node with this edge.
-		while(end == FALSE){
-			if(finda != *numedg){
-				if(j==0){add = i+1;}else{add = finda+1;}
-				finda = find(edgeA.begin()+add,edgeA.end(),edgeA.at(i)) - edgeA.begin();
-				if(finda != *numedg){
-					inds.push_back(finda);
-					}
-				}
-			if(findb != *numedg){
-				if(j==0){add = i+1;}else{add = findb+1;}
-				findb = find(edgeB.begin()+add,edgeB.end(),edgeB.at(i)) - edgeB.begin();
-				if(findb != *numedg){
-					inds.push_back(findb);
-					}
-				}
-			if(findab != *numedg){
-				if(j==0){add = i+1;}else{add = findab+1;}
-				findab = find(edgeB.begin()+add,edgeB.end(),edgeA.at(i)) - edgeB.begin();
-				if(findab != *numedg){
-					inds.push_back(findab);
-					}
-				}
-			if(findba != *numedg){
-				if(j==0){add = i+1;}else{add = findba+1;}
-				findba = find(edgeA.begin()+add,edgeA.end(),edgeB.at(i)) - edgeA.begin();
-				if(findba != *numedg){
-					inds.push_back(findba);
-					}
-				}
-			
-			if(finda == *numedg && findb == *numedg && findab == *numedg && findba == *numedg){
-				end = TRUE;
-			}else{
-				j = 1;
-				}
-
+		if(*disk){
+			row.assign(*numedg-1-i, 1);
 			}
 
-		nodesI.insert(edgeA.at(i)); // The nodes for this edge.
-		nodesI.insert(edgeB.at(i));
+		neighbA = nodeNeighb[edgeA.at(i)];
+		neighbB = nodeNeighb[edgeB.at(i)];
+		// The node neighbourhood for the focal edge.
+		set_union(neighbA.begin(),neighbA.end(),neighbB.begin(),neighbB.end(), inserter(neighbFocal, neighbFocal.begin()));
 
-		// Loop through edges that share a node with the current edge and calculate similarity scores.
-		for(j = 0; j < inds.size(); j++){
+		neighbA.clear();
+		neighbB.clear();
 
-			// Get the two non-shared nodes.
-			nodesJ.insert(edgeA.at(inds.at(j)));
-			nodesJ.insert(edgeB.at(inds.at(j)));
+		if(*weighted){
+			mapA = weightMap[edgeA.at(i)];
+			mapB = weightMap[edgeB.at(i)];
+			if(!(*bipartite)){
+				mapA.insert( pair<int,double>(edgeA.at(i), 1) );
+				mapB.insert( pair<int,double>(edgeB.at(i), 1) );
+				}
+			}
+
+		// Add focal nodes (inclusive neighbourhood set).
+		if(!(*bipartite)){
+			neighbFocal.insert(edgeA.at(i));
+			neighbFocal.insert(edgeB.at(i));
+			}
+
+		// Loop through edges for which we have not yet calculated a similarity score and do so.
+		for(j = (i+1); j <= *numedg-1; j++){
+
+			neighbA = nodeNeighb[edgeA.at(j)];
+			neighbB = nodeNeighb[edgeB.at(j)];
+			// The node neighbourhood for the nodes in edge j.
+			set_union(neighbA.begin(),neighbA.end(),neighbB.begin(),neighbB.end(), inserter(neighbOther, neighbOther.begin()));
 
 			//Rprintf("\ninds.size %d\nedgeA.at(inds.at(j)) %d\nedgeB.at(inds.at(j)) %d\n",inds.size(),edgeA.at(inds.at(j)),edgeB.at(inds.at(j)));
 
-			set_difference(nodesI.begin(),nodesI.end(),nodesJ.begin(),nodesJ.end(), inserter(diff, diff.begin()));
-			set_difference(nodesJ.begin(),nodesJ.end(),nodesI.begin(),nodesI.end(), inserter(diff, diff.begin()));
-			
-			for(sit = diff.begin(); sit != diff.end(); sit++){
-				nonshared.push_back(*sit);
-				}
-
-			//for(k=0;k<nonshared.size();k++){
-			//	Rprintf("\nnonsh: %d\n",nonshared.at(k));
-			//	}
-
-			mitA = nodeNeighb.find(nonshared.at(0));
-			mitB = nodeNeighb.find(nonshared.at(1));
-
-			if(mitA == nodeNeighb.end() && mitB == nodeNeighb.end()){
-				which = 0;
-				getNodeNeighbourhood(nodeNeighb, weightMap, edgeA, edgeB, nonshared.at(0), nonshared.at(1), numedg, weighted, weights, which);
-			}else if(mitA == nodeNeighb.end() && mitB != nodeNeighb.end()){
-				which = 1;
-				getNodeNeighbourhood(nodeNeighb, weightMap, edgeA, edgeB, nonshared.at(0), nonshared.at(1), numedg, weighted, weights, which);
-			}else if(mitA != nodeNeighb.end() && mitB == nodeNeighb.end()){
-				which = 2;
-				getNodeNeighbourhood(nodeNeighb, weightMap, edgeA, edgeB, nonshared.at(0), nonshared.at(1), numedg, weighted, weights, which);
-				}
-
-			neighbA = nodeNeighb[nonshared.at(0)];
-			neighbB = nodeNeighb[nonshared.at(1)];
 
 			if(!(*bipartite)){ // Inclusive node neighbourhood only if not bipartite.
-				neighbA.insert(nonshared.at(0));
-				neighbB.insert(nonshared.at(1));
+				neighbOther.insert(edgeA.at(j));
+				neighbOther.insert(edgeB.at(j));
 				}
 
 			if(*weighted){
-				mapA = weightMap[nonshared.at(0)];
-				mapB = weightMap[nonshared.at(1)];
+				mapC = weightMap[edgeA.at(j)];
+				mapD = weightMap[edgeB.at(j)];
 				if(!(*bipartite)){
-					mapA.insert( pair<int,double>(nonshared.at(0), 1) );
-					mapB.insert( pair<int,double>(nonshared.at(1), 1) );
+					mapC.insert( pair<int,double>(edgeA.at(j), 1) );
+					mapD.insert( pair<int,double>(edgeB.at(j), 1) );
 					}
 				}
 
@@ -321,28 +268,34 @@ void getEdgeSimilarities(int *ea, int *eb, int *numedg, int *rowlen, double *wei
 			//	Rprintf("\nneighbB: %d\n",*sit);
 			//	}
 
-			set_intersection(neighbA.begin(),neighbA.end(),neighbB.begin(),neighbB.end(), inserter(common, common.begin()));
+			set_intersection(neighbFocal.begin(),neighbFocal.end(),neighbOther.begin(),neighbOther.end(), inserter(common, common.begin()));
 
 			if(*weighted || *directed){
-				set_union(neighbA.begin(),neighbA.end(),neighbB.begin(),neighbB.end(), inserter(total, total.begin()));
+				set_union(neighbFocal.begin(),neighbFocal.end(),neighbOther.begin(),neighbOther.end(), inserter(total, total.begin()));
 				}
 
 			if(!*weighted && !*directed){
 				// Soergel distance (1 - Jaccard coefficient).
-				numerat = neighbA.size() + neighbB.size() - 2*common.size();
-				denom = neighbA.size() + neighbB.size() - common.size();
+				numerat = neighbFocal.size() + neighbOther.size() - 2*common.size();
+				denom = neighbFocal.size() + neighbOther.size() - common.size();
 				distm = numerat/denom;
 
-				if(*disk){
-					row.at(inds.at(j)-i-1) = distm;
+	 			if(*disk){
+					row.at(j-i-1) = distm;
 				}else{
-					dissvec[inds.at(j)-i-1+runn] = distm;
+					dissvec[k] = distm;
 					}
 			}else if(*weighted && !*directed){
 				// Loop through sorted node neighbourhood union and extract corresponding weights.
 				for(sit = total.begin(); sit != total.end(); sit++){
 					aI.push_back( mapA[*sit] ); // Equals zero if unmatched node key.
-					aJ.push_back( mapB[*sit] );
+					aI.push_back( mapB[*sit] );
+					aI.push_back( mapA[*sit] );
+					aI.push_back( mapB[*sit] );
+					aJ.push_back( mapC[*sit] );
+					aJ.push_back( mapD[*sit] );
+					aJ.push_back( mapD[*sit] );
+					aJ.push_back( mapC[*sit] );
 					}
 
 				// Tanimoto coefficient.
@@ -350,14 +303,15 @@ void getEdgeSimilarities(int *ea, int *eb, int *numedg, int *rowlen, double *wei
 				absA = inner_product(aI.begin(),aI.end(),aI.begin(),0.0);
 				absB = inner_product(aJ.begin(),aJ.end(),aJ.begin(),0.0);
 				if(*disk){
-					row.at(inds.at(j)-i-1) = 1.0 - (dotprod/(absA + absB - dotprod));
+					row.at(j-i-1) = 1.0 - (dotprod/(absA + absB - dotprod));
 				}else{
-					dissvec[inds.at(j)-i-1+runn] = 1.0 - (dotprod/(absA + absB - dotprod));
+					dissvec[k] = 1.0 - (dotprod/(absA + absB - dotprod));
 					}
 
 			}else if(*weighted && *directed){
-				// Calculate directed weights - 1 if in same direction, 0.5 if not.
-				getDirectedWeights(dirWeights, common, edgeA, edgeB, nonshared.at(0), nonshared.at(1), numedg, dirweight);
+				// Calculate directed weights - 1 if in same direction, 0.5 (or dirweight) if not.
+				getDirectedWeights_all(dirWeights, common, edgeA, edgeB, edgeA.at(i), edgeA.at(j), numedg, dirweight);
+				getDirectedWeights_all(dirWeights, common, edgeA, edgeB, edgeA.at(i), edgeA.at(j), numedg, dirweight);
 				
 				// Loop through sorted node neighbourhood union and extract corresponding weights.
 				for(sit = total.begin(); sit != total.end(); sit++){
@@ -373,30 +327,30 @@ void getEdgeSimilarities(int *ea, int *eb, int *numedg, int *rowlen, double *wei
 				absA = inner_product(aI.begin(),aI.end(),aI.begin(),0.0);
 				absB = inner_product(aJ.begin(),aJ.end(),aJ.begin(),0.0);
 				if(*disk){
-					row.at(inds.at(j)-i-1) = 1.0 - (dotprod/(absA + absB - dotprod));
+					row.at(j-i-1) = 1.0 - (dotprod/(absA + absB - dotprod));
 				}else{
-					dissvec[inds.at(j)-i-1+runn] = 1.0 - (dotprod/(absA + absB - dotprod));
+					dissvec[k] = 1.0 - (dotprod/(absA + absB - dotprod));
 					}
 					
 			}else if(!*weighted && *directed){
 				// Calculate directed weights - 1 if in same direction, 0.5 if not.
-				getDirectedWeights(dirWeights, common, edgeA, edgeB, nonshared.at(0), nonshared.at(1), numedg, dirweight);
+				getDirectedWeights_all(dirWeights, common, edgeA, edgeB, nonshared.at(0), nonshared.at(1), numedg, dirweight);
 
 				// Loop through sorted node neighbourhood union and extract corresponding weights.
 				for(sit = total.begin(); sit != total.end(); sit++){
-					if(find(neighbA.begin(),neighbA.end(),*sit) != neighbA.end() && dirWeights[*sit] != 0){
+					if(find(neighbFocal.begin(),neighbFocal.end(),*sit) != neighbFocal.end() && dirWeights[*sit] != 0){
 						aI.push_back( dirWeights[*sit] );
-					}else if(find(neighbA.begin(),neighbA.end(),*sit) != neighbA.end() && dirWeights[*sit] == 0){
+					}else if(find(neighbFocal.begin(),neighbFocal.end(),*sit) != neighbFocal.end() && dirWeights[*sit] == 0){
 						aI.push_back(1);
-					}else if(find(neighbA.begin(),neighbA.end(),*sit) == neighbA.end()){
+					}else if(find(neighbFocal.begin(),neighbFocal.end(),*sit) == neighbFocal.end()){
 						aI.push_back(0);
 						}
 
-					if(find(neighbB.begin(),neighbB.end(),*sit) != neighbB.end() && dirWeights[*sit] != 0){
+					if(find(neighbOther.begin(),neighbOther.end(),*sit) != neighbOther.end() && dirWeights[*sit] != 0){
 						aJ.push_back( dirWeights[*sit] );
-					}else if(find(neighbB.begin(),neighbB.end(),*sit) != neighbB.end() && dirWeights[*sit] == 0){
+					}else if(find(neighbOther.begin(),neighbOther.end(),*sit) != neighbOther.end() && dirWeights[*sit] == 0){
 						aJ.push_back(1);
-					}else if(find(neighbB.begin(),neighbB.end(),*sit) == neighbB.end()){
+					}else if(find(neighbOther.begin(),neighbOther.end(),*sit) == neighbOther.end()){
 						aJ.push_back(0);
 						}
 					}
@@ -405,20 +359,20 @@ void getEdgeSimilarities(int *ea, int *eb, int *numedg, int *rowlen, double *wei
 				absA = inner_product(aI.begin(),aI.end(),aI.begin(),0.0);
 				absB = inner_product(aJ.begin(),aJ.end(),aJ.begin(),0.0);
 				if(*disk){
-					row.at(inds.at(j)-i-1) = 1.0 - (dotprod/(absA + absB - dotprod));
+					row.at(j-i-1) = 1.0 - (dotprod/(absA + absB - dotprod));
 				}else{
-					dissvec[inds.at(j)-i-1+runn] = 1.0 - (dotprod/(absA + absB - dotprod));
+					dissvec[k] = 1.0 - (dotprod/(absA + absB - dotprod));
 					}
 				
 				}
 
 			//Rprintf("\ninds.at(j) %d\ncommon.size %d\ntotal.size %d\n",inds.at(j),common.size(),total.size());
 
-			nodesJ.clear();
 			diff.clear();
 			nonshared.clear();
 			neighbA.clear();
 			neighbB.clear();
+			neighbOther.clear();
 			common.clear();
 			total.clear();
 			mapA.clear();
@@ -426,6 +380,8 @@ void getEdgeSimilarities(int *ea, int *eb, int *numedg, int *rowlen, double *wei
 			aI.clear();
 			aJ.clear();
 			dirWeights.clear();
+
+			k = k + 1;
 
 			}
 
@@ -476,13 +432,11 @@ void getEdgeSimilarities(int *ea, int *eb, int *numedg, int *rowlen, double *wei
 
 			rowlen[i] = row.size();
 
-		}else{
-			runn = runn + *numedg - 1 - i;			
 			}
 
 		row.clear();
 		inds.clear();
-		nodesI.clear();
+		neighbFocal.clear();
 
 		}
 

@@ -23,13 +23,13 @@ extern "C" {
 
 using namespace std;
 
-void getLinkDensities(int *ma, int *mb, int *ea, int *eb, int *numedg, int *clusnums, double *pdens, double *heights, double *pdmax, int *csize, bool *removetrivial, bool *verbose)
+void getLinkDensities(int *ma, int *mb, int *ea, int *eb, int *numedg, int *clusnums, double *pdens, double *heights, double *pdmax, int *csize, bool *removetrivial, bool *bipartite, int *bip, bool *verbose)
 
 	{
 
-	int i, j, k, p = 0, ne, nn, count = 0, csum = clusnums[0], perc = 0, one = 0, rm = 0;
+	int i, j, k, p = 0, ne, nn, count = 0, csum = clusnums[0], perc = 0, one = 0, rm = 0, n1, n2, which1, which2, nn0, nn1;
 	float prog, memuse;
-	double ldens, maxp, best = 0;
+	double ldens, maxp, best = 0.0, denom;
 	vector<int> mergeA;
 	vector<int> mergeB;
 	vector<int> edgeA;
@@ -45,6 +45,8 @@ void getLinkDensities(int *ma, int *mb, int *ea, int *eb, int *numedg, int *clus
 	vector<int> cdelTemp;
 	vector<int>::iterator bestIt;
 	set<int> nodes;
+	set<int> nodes0; // For bipartite networks.
+	set<int> nodes1;
 
 	copy(ma, ma + *numedg-1, back_inserter(mergeA));
 	copy(mb, mb + *numedg-1, back_inserter(mergeB));
@@ -140,14 +142,41 @@ void getLinkDensities(int *ma, int *mb, int *ea, int *eb, int *numedg, int *clus
 				ne = clusters[currentTemp.at(j)].size();
 				// Number of nodes.
 				for(k = 0; k < ne; k++){
-					nodes.insert(edgeA.at(clusters[currentTemp.at(j)].at(k)-1));
-					nodes.insert(edgeB.at(clusters[currentTemp.at(j)].at(k)-1));
+					n1 = edgeA.at(clusters[currentTemp.at(j)].at(k)-1);
+					n2 = edgeB.at(clusters[currentTemp.at(j)].at(k)-1);
+					nodes.insert(n1);
+					nodes.insert(n2);
+					if(*bipartite){
+						which1 = bip[(n1-1)];
+						which2 = bip[(n2-1)];
+						if(which1 == 0){
+							nodes0.insert(n1);
+						}else{
+							nodes1.insert(n1);
+							}
+						if(which2 == 0){
+							nodes0.insert(n2);
+						}else{
+							nodes1.insert(n2);
+							}
+						}
 					}
 				nn = nodes.size();
-				ldens = ldens + (double(ne)*(double(ne)-double(nn)+1.0))/((double(nn)-2.0)*(double(nn)-1.0));
+				if(!(*bipartite)){
+					ldens = ldens + (double(ne)*(double(ne)-double(nn)+1.0))/((double(nn)-2.0)*(double(nn)-1.0));
+				}else{
+					nn0 = nodes0.size();
+					nn1 = nodes1.size();
+					denom = (double(nn0)*double(nn1)*2.0)-((double(nn)-1.0)*2.0);
+					if(!(denom==0)){
+						ldens = ldens + (double(ne)*(double(ne)-double(nn)+1.0))/denom;
+						}
+					}
 				nodes.clear();
+				nodes0.clear();
+				nodes1.clear();
 				}
-			
+
 			pdens[p] = (2.0/ *numedg)*ldens;
 			maxp = pdens[p];
 

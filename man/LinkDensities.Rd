@@ -1,5 +1,5 @@
-\name{getLinkCommDensities}
-\alias{getLinkCommDensities}
+\name{LinkDensities}
+\alias{LinkDensities}
 
 \title{
 Calculate Link Community Link Densities
@@ -8,7 +8,7 @@ Calculate Link Community Link Densities
 This function calculates link densities for link communities.
 }
 \usage{
-getLinkCommDensities(x, clusterids = 1:x$numbers[3])
+LinkDensities(x, clusterids = 1:x$numbers[3])
 }
 
 \arguments{
@@ -45,6 +45,6 @@ g <- swiss[,3:4]
 lc <- getLinkCommunities(g)
 
 ## Calculate link densities.
-ld <- getLinkCommDensities(lc)
+ld <- LinkDensities(lc)
 }
 

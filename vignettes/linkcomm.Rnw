@@ -1,5 +1,5 @@
 %\VignetteIndexEntry{A step-by-step guide to using linkcomm}
-%\VignetteDepends{grid, igraph0, RColorBrewer}
+%\VignetteDepends{grid, igraph, RColorBrewer}
 %\VignetteKeyword{linkcomm}
 %\VignettePackage{linkcomm}
 

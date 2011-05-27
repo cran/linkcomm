@@ -368,13 +368,13 @@ plotLinkCommGraph <- function(x, clusterids = 1:length(x$clusters), nodes = NULL
 		# Colour edges according to community membership.
 		for(i in 1:length(clusters)){
 			newcids <- j:sum(clen[1:i])
-			E(ig)[newcids-1]$color <- cols[i]
+			E(ig)[newcids]$color <- cols[i]
 			j <- tail(newcids,1)+1
 			}
 	}else{
 		ig <- x$igraph
 		for(i in 1:length(clusters)){
-			E(ig)[clusters[[i]]-1]$color <- cols[i]
+			E(ig)[clusters[[i]]]$color <- cols[i]
 			}
 		}
 	
@@ -544,7 +544,7 @@ plotLinkCommSummComm <- function(x, clusterids = 1:x$numbers[3], summary = "conn
 			}
 		main <- "Node density per community"
 	}else if(summary == "ld"){
-		nums <- getLinkCommDensities(x, clusterids = clusterids)
+		nums <- LinkDensities(x, clusterids = clusterids)
 		main <- "Link density per community"
 	}else{
 		nums <- getCommunityConnectedness(x, clusterids = clusterids, conn = summary, verbose = verbose)

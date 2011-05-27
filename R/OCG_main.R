@@ -27,6 +27,46 @@ print.OCG <- function(x, ...)
 	}
 
 
+linkcomm2clustnsee <- function(x, file = "temp.cns", network.name = NULL)
+	{
+	# x is an object of class "linkcomm" or "OCG".
+	if(class(x)!="linkcomm" && class(x)!="OCG"){
+		stop("input must be a linkcomm or OCG object\n")
+		}
+	if(is.null(network.name)){
+		fcall <- match.call()
+		network.name <- as.character(fcall[2])
+		}
+	num.clusters <- x$numbers[3]
+	nums <- data.frame(clust.size = rep(0,num.clusters), multi.class = rep(0,num.clusters))
+	for(i in 1:num.clusters){
+		nums[i,1] <- x$clustsizes[match(i,names(x$clustsizes))]
+		nodes <- getNodesIn(x,clusterids=i)
+		numcl <- x$numclusters[match(nodes,names(x$numclusters))]
+		nums[i,2] <- length(which(numcl>1))
+		}
+	cout <- ""
+	for(i in 1:nrow(nums)){
+		cout <- paste(cout,i,"(",nums[i,1],",",nums[i,2],"), ",sep="")
+		}
+
+	# Pre-amble.
+	cat("#ClustnSee analysis export\n#Algorithm:",class(x),"\n#Network:",network.name,"\n#Scope:Network\n#Cluster ID (nb nodes in cluster, nb multi-classed nodes in cluster):\n#",cout,"\n\n\n", file=file, sep="")
+
+	# Clusters and their nodes.
+	for(i in 1:num.clusters){
+		cat(">ClusterID:",i,"||\n", file=file, sep="", append = TRUE)
+		nodes <- getNodesIn(x,clusterids=i)
+		for(j in 1:length(nodes)){
+			cat(nodes[j],"\n", file=file, sep="", append = TRUE)
+			}
+		cat("\n", file=file, sep="", append = TRUE)
+		}
+
+	return(invisible())
+
+	}
+
 
 read.OCG <- function(file, elfile = NULL, verbose = FALSE, keep.out = FALSE)
 	{
@@ -107,13 +147,14 @@ read.OCG <- function(file, elfile = NULL, verbose = FALSE, keep.out = FALSE)
 	}
 
 
-getOCG.clusters <- function(network, init.class.sys = 3, fusion.method = 0, max.class.card = 0, cent.class.sys = 1, min.class = 2, verbose = TRUE, keep.out = FALSE)
+getOCG.clusters <- function(network, init.class.sys = 3, max.class.card = 0, cent.class.sys = 1, min.class = 2, verbose = TRUE, keep.out = FALSE)
 	{
 
 	del <- FALSE
 
 	if(class(network) == "data.frame" || class(network) == "matrix"){
 		if(ncol(network)==2){
+			numnodes = length(unique(c(as.character(network[,1]),as.character(network[,2]))))
 			write.table(network,file="OCG_input.txt",quote=FALSE,sep="\t",col.names=FALSE,row.names=FALSE)
 			del <- TRUE
 		}else{
@@ -121,10 +162,14 @@ getOCG.clusters <- function(network, init.class.sys = 3, fusion.method = 0, max.
 			return(invisible())
 			}
 	}else if(class(network) != "character"){
-		cat("'file' must be a valid file name\n")
+		cat("network must be a data frame or matrix with 2 columns, or a valid file name\n")
 		return(invisible())
 	}else if(file.access(network) == -1){
-		return
+		stop(cat("\nfile not found: \"",network,"\"\n",sep=""))
+	}else{
+		nn <- read.table(file = network, header = FALSE, stringsAsFactors = FALSE)
+		numnodes <- length(unique(c(as.character(nn[,1]),as.character(nn[,2]))))
+		rm(nn)
 		}
 
 	if(verbose){
@@ -148,14 +193,14 @@ getOCG.clusters <- function(network, init.class.sys = 3, fusion.method = 0, max.
 	#ClCh <- as.ineteger(min.class)
 	
 	ICS <- init.class.sys
-	FM <- fusion.method
+	FM <- 0
 	MCC <- max.class.card
 	CCS <- cent.class.sys
 	MC <- min.class
 
 	success <- 0
 
-	out <- .C("getOCGclusters", as.character(file), as.integer(ICS), as.integer(FM), as.integer(MCC), as.integer(CCS), as.integer(MC), as.integer(verb), success = as.integer(success))
+	out <- .C("getOCGclusters", as.character(file), as.integer(ICS), as.integer(FM), as.integer(MCC), as.integer(CCS), as.integer(MC), as.integer(numnodes), as.integer(verb), success = as.integer(success))
 
 	if(out$success == 1){
 		ocg <- read.OCG(file = "OCG_temp.txt", elfile = file, verbose = verbose, keep.out = keep.out)

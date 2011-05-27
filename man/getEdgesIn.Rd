@@ -13,7 +13,7 @@ getEdgesIn(x, clusterids = 1, nodes = NULL, all = FALSE)
 
 \arguments{
   \item{x}{
-An object of class \code{linkcomm}.
+An object of class \code{linkcomm} or \code{OCG}.
 }
   \item{clusterids}{
 An integer vector of community IDs. Defaults to community 1.

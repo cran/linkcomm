@@ -2,10 +2,10 @@ Package: linkcomm
 Type: Package
 Title: Tools for Generating, Visualizing, and Analysing Link
         Communities in Networks
-Version: 1.0-6
+Version: 1.0-7
 Date: 2011-05-27
 Author: Alex T. Kalinka <alex.t.kalinka@gmail.com>, with contributions
-        from Alain Geunoche
+        from Alain Guenoche
 Maintainer: Alex T. Kalinka <alex.t.kalinka@gmail.com>
 Description: Link communities reveal the nested and overlapping
         structure in networks, and uncover the key nodes that form
@@ -15,11 +15,13 @@ Description: Link communities reveal the nested and overlapping
         linkcomm package also includes tools for generating,
         visualizing, and analysing Overlapping Cluster Generator (OCG)
         communities.
-Depends: igraph0, RColorBrewer
+Depends: igraph, RColorBrewer
 Imports: grid, utils
+Suggests: fastcluster
 License: GPL (>= 2)
 LazyLoad: yes
 LazyData: yes
-Packaged: 2012-07-06 09:50:15 UTC; alexk
+Packaged: 2013-05-28 20:46:14 UTC; alexk
+NeedsCompilation: yes
 Repository: CRAN
-Date/Publication: 2012-07-06 10:15:51
+Date/Publication: 2013-05-29 10:50:28
