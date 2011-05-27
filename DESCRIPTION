@@ -2,7 +2,7 @@ Package: linkcomm
 Type: Package
 Title: Tools for Generating, Visualizing, and Analysing Link
         Communities in Networks
-Version: 1.0-8
+Version: 1.0-9
 Date: 2011-05-27
 Author: Alex T. Kalinka <alex.t.kalinka@gmail.com>, with contributions from Alain Guenoche
 Maintainer: Alex T. Kalinka <alex.t.kalinka@gmail.com>
@@ -13,7 +13,7 @@ Suggests: fastcluster
 License: GPL (>= 2)
 LazyLoad: yes
 LazyData: yes
-Packaged: 2014-04-03 09:06:59 UTC; alexk
+Packaged: 2014-06-04 11:54:05 UTC; alexk
 NeedsCompilation: yes
 Repository: CRAN
-Date/Publication: 2014-04-03 12:26:20
+Date/Publication: 2014-06-04 16:20:43

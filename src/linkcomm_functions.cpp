@@ -27,7 +27,7 @@ void cutTreeAt(int *ma, int *mb, double *heights, double *cutat, int *csize, int
 
 	{
 
-	int i, j, perc = 0;
+	int i, j;
 	float prog;
 	vector<int> mergeA;
 	vector<int> mergeB;
@@ -117,7 +117,7 @@ void getJaccards(int *nodes, int *clusters, int *clusids, int *numNodes, double 
 	
 	{
 
-	int i, j = 0, runn = 0, perc = 0;
+	int i, j = 0, runn = 0;
 	float prog;
 	set<int> tempNodes;
 	map<int, set<int> > clusMap;
@@ -150,8 +150,6 @@ void getJaccards(int *nodes, int *clusters, int *clusids, int *numNodes, double 
 			tempNodes.clear();
 			}
 		}
-	
-	perc = 0;
 
 	// Loop through clusters and calculate Jaccards.
 	for(i = 0; i < clusMap.size()-1; i++){

@@ -322,10 +322,10 @@ void getOCGclusters(char **file, int *ICS, int *FM, int *MCC, int *CCS, int *MC,
       assert ( A[i] != NULL);
       for (j=0; j < N; j++) A[i][j]=0;
     }
-  /*	A is the to dimentional adjacency table : A[i][j]=A[j][i] iff vertices i and j are linked 
-	B is the to dimentional table containing the (integer) modularity value of any pair (i,j)
-	Clas is a one dimentional array : Clas[i] is the class number of vertex i
-	Dg is a one dimentional array : Dg[i] is the degree (nb. of adjacent vertices) of vertex i
+  /*	A is the two dimensional adjacency table : A[i][j]=A[j][i] iff vertices i and j are linked 
+	B is the two dimensional table containing the (integer) modularity value of any pair (i,j)
+	Clas is a one dimensional array : Clas[i] is the class number of vertex i
+	Dg is a one dimensional array : Dg[i] is the degree (nb. of adjacent vertices) of vertex i
   */	
 
   FichCar = fopen(FichE,"r");  
@@ -1024,9 +1024,34 @@ for(i=0;i<N;i++){
 
 
   // Clean up memory.
-  free(Cl); free(Clas); free(Kard);
-  free(BestCl); free(BestKard); free(B);
-  free(A); free(Dg); free(Var);
+  free(Clas); free(Kard);
+  free(BestKard); free(Dg);
+
+  for (i = 0; i < N; i++) { 
+  free(A[i]);
+  }
+  free(A);
+
+  for (i = 0; i < N; i++) { 
+  free(B[i]);
+  }
+  free(B);
+
+  for (i = 0; i < N; i++) { 
+  free(Cl[i]);
+  }
+  free(Cl);
+
+  for (i = 0; i < NbClIni; i++) { 
+  free(Var[i]);
+  }
+  free(Var);
+
+  for (i = 0; i < NbClIni; i++) { 
+  free(BestCl[i]);
+  }
+  free(BestCl);
+
 
   *success = 1;
 

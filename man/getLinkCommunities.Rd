@@ -96,7 +96,7 @@ When \code{use.all.edges} is TRUE, the algorithm may be slow as all pairs of edg
 }
 
 \seealso{
-\code{\link{plot.linkcomm}}, \code{\link{newLinkCommsAt}}
+\code{\link{plot.linkcomm}}, \code{\link{newLinkCommsAt}}, \code{\link{meta.communities}}
 }
 \examples{
 ## Generate graph and extract link communities.

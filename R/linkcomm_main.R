@@ -211,10 +211,13 @@ getLinkCommunities <- function(network, hcmethod = "average", use.all.edges = FA
 		}
 
 	# Calculate link densities, cut the tree, and extract optimal clusters.
+
 	hh <- unique(round(hcedges$height, digits = 5)) # Round to 5 digits to prevent numerical instability affecting community formation.
 	countClusters <- function(x,ht){return(length(which(ht==x)))}
 	clusnums <- sapply(hh, countClusters, ht = round(hcedges$height, digits = 5)) # Number of clusters at each height.
+
 	ldlist <- .C("getLinkDensities",as.integer(hcedges$merge[,1]), as.integer(hcedges$merge[,2]), as.integer(edges[,1]), as.integer(edges[,2]), as.integer(len), as.integer(clusnums), pdens = double(length(hh)), heights = as.double(hh), pdmax = double(1), csize = integer(1), as.logical(removetrivial), as.logical(bipartite), as.integer(bip), as.logical(verbose))
+
 	pdens <- c(0,ldlist$pdens)
 	heights <- c(0,hh)
 	pdmax <- ldlist$pdmax

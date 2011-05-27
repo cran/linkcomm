@@ -80,7 +80,7 @@ void compressRow(vector<float> &v)
 void hclustLinkComm(int *numedg, int *rowlen, float *heights, int *hca, int *hcb, bool *verbose)
 	{
 	
-	int row, col, numM = 0, numedgU = *numedg, perc = 0;
+	int row, col, numM = 0, numedgU = *numedg;
 	float diff, best, min, prog, *arr;
 	vector<int> merges; // Edge pairs that are to be agglomerated.
 	vector<int> einds; // Edge indices to be updated as edges are deleted and new clusters added.

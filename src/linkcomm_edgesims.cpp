@@ -167,7 +167,7 @@ void getEdgeSimilarities(int *ea, int *eb, int *numedg, int *rowlen, double *wei
 
 	{
 
-	int i, j, finda, findab, findb, findba, add, which, perc = 0;
+	int i, j, finda, findab, findb, findba, add, which;
 	int first = -1, last = -1, sum = 0, runn = 0;
 	double dotprod, absA, absB, numerat, denom, distm;
 	float prog;

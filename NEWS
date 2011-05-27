@@ -4,6 +4,17 @@ Author: Alex T. Kalinka (alex.t.kalinka@gmail.com).
 
 
 
+linkcomm 1.0-9
+==============
+
+- Improved efficiency of edge.duplicates() function.
+
+- Fixed a small memory-usage bug in linkdensities.cpp.
+
+- Fixed memory leaks in OCG_algorithm.c.
+
+
+
 linkcomm 1.0-8
 ==============
 
