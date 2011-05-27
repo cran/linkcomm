@@ -4,6 +4,13 @@ Author: Alex T. Kalinka (alex.t.kalinka@gmail.com).
 
 
 
+linkcomm 1.0-10
+===============
+
+- Attempted to fix file access error relating to Sparc Solaris system.
+
+
+
 linkcomm 1.0-9
 ==============
 

@@ -14,8 +14,9 @@
 #include <algorithm>
 #include <stdint.h>
 
-extern "C" {
 #include <R.h>
+
+extern "C" {
 
 using namespace std;
 

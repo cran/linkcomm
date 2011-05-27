@@ -14,8 +14,9 @@
 #include <string>
 #include <sstream>
 
-extern "C" {
 #include <R.h>
+
+extern "C" {
 
 using namespace std;
 
@@ -32,8 +33,8 @@ void readOCG(char **file, int *Modularity, double *Q)
 	stringstream ss (stringstream::in | stringstream::out);
 
 
-	infile.open(*file, ios::in | ios::binary);
-	outfile.open("OCG_numclusters.txt", ios::out | ios::binary);
+	infile.open(*file, ios::in );
+	outfile.open("OCG_numclusters.txt", ios::out );
 
 	if(! infile.is_open()){
 		Rprintf("\nERROR: %s not found!\n",*file); return;

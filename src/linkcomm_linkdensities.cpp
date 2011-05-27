@@ -18,16 +18,18 @@
 #include <set>
 #include <map>
 
-extern "C" {
 #include <R.h>
+
+extern "C" {
 
 using namespace std;
 
-void getLinkDensities(int *ma, int *mb, int *ea, int *eb, int *numedg, int *clusnums, double *pdens, double *heights, double *pdmax, int *csize, bool *removetrivial, bool *bipartite, int *bip, bool *verbose)
+void getLinkDensities(int *ma, int *mb, int *ea, int *eb, unsigned int *numedg, int *clusnums, int *numcl, double *pdens, double *heights, double *pdmax, int *csize, bool *removetrivial, bool *bipartite, int *bip, bool *verbose)
 
 	{
 
-	int i, j, k, p = 0, ne, nn, count = 0, csum = clusnums[0], one = 0, rm = 0, n1, n2, which1, which2, nn0, nn1;
+	unsigned int i, j, k, ne, one = 0, csum = clusnums[0];
+	int p = 0, nn, count = 0, rm = 0, n1, n2, which1, which2, nn0, nn1;
 	float prog;
 	double ldens, maxp, best = 0.0, denom;
 	vector<int> mergeA;
@@ -209,7 +211,7 @@ void getLinkDensities(int *ma, int *mb, int *ea, int *eb, int *numedg, int *clus
 			current = currentTemp;
 			currentTemp.clear();
 
-			if(prog < 100){
+			if(p < (*numcl-1)){
 				p++;
 				csum = csum + clusnums[p];
 				}

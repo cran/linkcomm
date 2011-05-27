@@ -61,6 +61,9 @@
 #include <assert.h>
 #include <math.h>
 
+#include <stdint.h>
+#include <inttypes.h>
+
 
 #include <R.h>
 
@@ -149,10 +152,12 @@ int compDoubles(double a, double b)
 void getOCGclusters(char **file, int *ICS, int *FM, int *MCC, int *CCS, int *MC, int *numnodes, int *verb, int *success){
 
 
-  int   i,j,k, ii,jj,kk, flag, NL, cl1, cl2, k1, k2, NbPos, MCV, ko, mycomp; 
+  int   i,j,k, ii, jj = 0, kk = 0, flag, cl1, cl2, k1, k2, ko, mycomp; 
   int 	VarMod, fus1, fus2, card=1;
-  long long	Mod, Vmax, BestMod=0;
+  long long	BestMod=0;
   double	MMod, var, VarMax;
+
+  int_fast32_t Mod;
 
 
   char FichE[120], **A;
@@ -428,7 +433,7 @@ for(i=0;i<N;i++)
       }
 
   int Adj, NbAdj, mis=0, Somcard=0;
-  short *X, *D, car;
+  short *D;
 
   switch(typ){
 
@@ -1009,7 +1014,7 @@ for(i=0;i<N;i++){
   fprintf(OUT, "\n");
 
   /* Now print the classes */
-  fprintf(OUT, "\n\nFinal classes (%d), Modularity = %lld (%.4f):\n",NbClas,Mod,MMod );
+  fprintf(OUT, "\n\nFinal classes (%d), Modularity = %"PRIdFAST32" (%.4f):\n", NbClas, Mod, MMod );
   for (k=0; k<NbClas; k++){
 
       fprintf(OUT, ">Class %3d  (%d nodes):\n",k+1,Kard[k]);
@@ -1029,27 +1034,18 @@ for(i=0;i<N;i++){
 
   for (i = 0; i < N; i++) { 
   free(A[i]);
-  }
-  free(A);
-
-  for (i = 0; i < N; i++) { 
   free(B[i]);
-  }
-  free(B);
-
-  for (i = 0; i < N; i++) { 
   free(Cl[i]);
   }
+  free(A);
+  free(B);
   free(Cl);
 
   for (i = 0; i < NbClIni; i++) { 
   free(Var[i]);
-  }
-  free(Var);
-
-  for (i = 0; i < NbClIni; i++) { 
   free(BestCl[i]);
   }
+  free(Var);
   free(BestCl);
 
 

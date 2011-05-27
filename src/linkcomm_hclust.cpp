@@ -20,8 +20,9 @@
 #include <sstream>
 #include <map>
 
-extern "C" {
 #include <R.h>
+
+extern "C" {
 
 using namespace std;
 
@@ -31,7 +32,8 @@ void compressRow(vector<float> &v)
 	{
 	// Compresses 1's in a row of the diss matrix.
 
-	int i, runn = 0, add = 0, first = -1, last = -1;
+	unsigned int i;
+	int runn = 0, add = 0, first = -1, last = -1;
 	float sum = 0;
 	vector<float> temp = v;
 
@@ -77,10 +79,10 @@ void compressRow(vector<float> &v)
 	}
 
 
-void hclustLinkComm(int *numedg, int *rowlen, float *heights, int *hca, int *hcb, bool *verbose)
+void hclustLinkComm(unsigned int *numedg, int *rowlen, float *heights, int *hca, int *hcb, bool *verbose)
 	{
 	
-	int row, col, numM = 0, numedgU = *numedg;
+	int row, col, numedgU = *numedg;
 	float diff, best, min, prog, *arr;
 	vector<int> merges; // Edge pairs that are to be agglomerated.
 	vector<int> einds; // Edge indices to be updated as edges are deleted and new clusters added.
@@ -95,7 +97,9 @@ void hclustLinkComm(int *numedg, int *rowlen, float *heights, int *hca, int *hcb
 	map<int,float>::iterator mcit;
 	vector<float> rowM;
 	vector<float> endM;
-	int wleft, count = 0, fin = 0, i, j, k, m, p;
+	int wleft, fin = 0;
+	unsigned int i, j, m, count = 0, numM = 0;
+	int k, p;
 	bool sones = FALSE;
 	string line;
 
@@ -111,7 +115,7 @@ void hclustLinkComm(int *numedg, int *rowlen, float *heights, int *hca, int *hcb
 
 	remove("linkcomm_diss");
 
-	infile.open("linkcomm_diss.txt", ios::in | ios::binary);
+	infile.open("linkcomm_diss.txt", ios::in );
 	outfile.open("linkcomm_diss", ios::out | ios::binary);
 	if(! infile.is_open()){
 			Rprintf("\nERROR: linkcomm_diss.txt not found!\n"); return;

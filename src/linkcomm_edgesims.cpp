@@ -21,17 +21,18 @@
 #include <map>
 #include <numeric>
 
-extern "C" {
 #include <R.h>
+
+extern "C" {
 
 using namespace std;
 
 
-void getNodeNeighbourhood(map<int, set<int> > &nN, map<int, map<int,double> > &wM, vector<int> &eA, vector<int> &eB, int nonSA, int nonSB, int *numedg, bool *weighted, double *weights, int which)
+void getNodeNeighbourhood(map<int, set<int> > &nN, map<int, map<int,double> > &wM, vector<int> &eA, vector<int> &eB, int nonSA, int nonSB, unsigned int *numedg, bool *weighted, double *weights, int which)
 
 	{
 
-	int finda = 0, findab = 0, findb = 0, findba = 0, add;
+	unsigned int finda = 0, findab = 0, findb = 0, findba = 0, add;
 	bool end = FALSE, first = TRUE;
 
 	if(which == 1){
@@ -101,11 +102,11 @@ void getNodeNeighbourhood(map<int, set<int> > &nN, map<int, map<int,double> > &w
 
 
 
-void getDirectedWeights(map<int,float> &dW, set<int> &comm, vector<int> &eA, vector<int> &eB, int nonSA, int nonSB, int *numedg, double *dirw)
+void getDirectedWeights(map<int,float> &dW, set<int> &comm, vector<int> &eA, vector<int> &eB, int nonSA, int nonSB, unsigned int *numedg, double *dirw)
 	
 	{
 
-	int i, add = 0, findNA = 0, findNB = 0;
+	unsigned int i, add = 0, findNA = 0, findNB = 0;
 	bool matchA = FALSE, matchB = FALSE, B = FALSE, first = TRUE;
 	vector<int> commV(comm.size());
 
@@ -163,11 +164,11 @@ void getDirectedWeights(map<int,float> &dW, set<int> &comm, vector<int> &eA, vec
 
 
 
-void getEdgeSimilarities(int *ea, int *eb, int *numedg, int *rowlen, double *weights, bool *directed, double *dirweight, bool *weighted, bool *disk, double *dissvec, bool *bipartite, bool *verbose)
+void getEdgeSimilarities(int *ea, int *eb, unsigned int *numedg, unsigned int *rowlen, double *weights, bool *directed, double *dirweight, bool *weighted, bool *disk, double *dissvec, bool *bipartite, bool *verbose)
 
 	{
 
-	int i, j, finda, findab, findb, findba, add, which;
+	unsigned int i, j, finda, findab, findb, findba, add, which;
 	int first = -1, last = -1, sum = 0, runn = 0;
 	double dotprod, absA, absB, numerat, denom, distm;
 	float prog;
@@ -201,10 +202,10 @@ void getEdgeSimilarities(int *ea, int *eb, int *numedg, int *rowlen, double *wei
 	copy(ea, ea + *numedg, back_inserter(edgeA));
 	copy(eb, eb + *numedg, back_inserter(edgeB));
 
-	remove("linkcomm_diss.txt");
-
 	ofstream outfile;
+
 	if(*disk){
+		remove("linkcomm_diss.txt");
 		outfile.open("linkcomm_diss.txt", ios::out);
 		if(! outfile.is_open()){
 				Rprintf("\nERROR: can't open linkcomm_diss.txt!\n"); return;

@@ -10,8 +10,9 @@
 #include <vector>
 #include <algorithm>
 
-extern "C" {
 #include <R.h>
+
+extern "C" {
 
 using namespace std;
 

@@ -8,7 +8,7 @@ Hierarchichal Clustering of Link Communities
 This function hierarchically clusters the link communities themselves and returns an object of class \code{hclust}.
 }
 \usage{
-getClusterRelatedness(x, clusterids = 1:x$numbers[3], hcmethod = "ward", 
+getClusterRelatedness(x, clusterids = 1:x$numbers[3], hcmethod = "ward.D", 
         cluster = TRUE, plot = TRUE, cutat = NULL, col = TRUE, 
         pal = brewer.pal(11, "Spectral"), labels = FALSE, plotcut = TRUE, 
         right = TRUE, verbose = TRUE, ...)
@@ -22,7 +22,7 @@ An object of class \code{linkcomm}.
 An integer vector of community IDs. Defaults to all communities.
 }
   \item{hcmethod}{
-A character string naming the hierarchical clustering method to use. Can be one of \code{"ward"}, \code{"single"}, \code{"complete"}, \code{"average"}, \code{"mcquitty"}, \code{"median"}, or \code{"centroid"}. Defaults to \code{"ward"}.
+A character string naming the hierarchical clustering method to use. Can be one of \code{"ward.D"}, \code{"ward.D2"}, \code{"single"}, \code{"complete"}, \code{"average"}, \code{"mcquitty"}, \code{"median"}, or \code{"centroid"}. Defaults to \code{"ward.D"}.
 }
   \item{cluster}{
 Logical, whether to cluster the communities. If FALSE, the function returns the upper triangular dissimilarity matrix as a vector. Defaults to TRUE.

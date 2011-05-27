@@ -18,8 +18,9 @@
 #include <set>
 #include <map>
 
-extern "C" {
 #include <R.h>
+
+extern "C" {
 
 using namespace std;
 
@@ -27,7 +28,7 @@ void cutTreeAt(int *ma, int *mb, double *heights, double *cutat, int *csize, int
 
 	{
 
-	int i, j;
+	unsigned int i, j;
 	float prog;
 	vector<int> mergeA;
 	vector<int> mergeB;
@@ -113,11 +114,12 @@ void cutTreeAt(int *ma, int *mb, double *heights, double *cutat, int *csize, int
 	}
 
 
-void getJaccards(int *nodes, int *clusters, int *clusids, int *numNodes, double *dissvec, bool *verbose)
+void getJaccards(int *nodes, int *clusters, int *clusids, unsigned int *numNodes, double *dissvec, bool *verbose)
 	
 	{
 
-	int i, j = 0, runn = 0;
+	unsigned int i, j = 0;
+	int runn = 0;
 	float prog;
 	set<int> tempNodes;
 	map<int, set<int> > clusMap;
@@ -188,10 +190,11 @@ void getJaccards(int *nodes, int *clusters, int *clusids, int *numNodes, double 
 
 
 
-void getNumClusters(int *unn, int *nodes, int *counts, int *numnodes, int *nrows, bool *verbose)
+void getNumClusters(int *unn, int *nodes, int *counts, unsigned int *numnodes, unsigned int *nrows, bool *verbose)
 	{
 
-	int i, j, nd;
+	unsigned int i, j;
+	int nd;
 	float prog;
 
 	// Loop through nodes and count their community membership.

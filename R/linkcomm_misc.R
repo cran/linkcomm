@@ -321,7 +321,7 @@ getCommunityConnectedness <- function(x, clusterids = 1:x$numbers[3], conn = "co
 	}
 
 
-getClusterRelatedness <- function(x, clusterids = 1:x$numbers[3], hcmethod = "ward", cluster = TRUE, plot = TRUE, cutat = NULL, col = TRUE, pal = brewer.pal(11,"Spectral"), labels = FALSE, plotcut = TRUE, right = TRUE, verbose = TRUE, ...)
+getClusterRelatedness <- function(x, clusterids = 1:x$numbers[3], hcmethod = "ward.D", cluster = TRUE, plot = TRUE, cutat = NULL, col = TRUE, pal = brewer.pal(11,"Spectral"), labels = FALSE, plotcut = TRUE, right = TRUE, verbose = TRUE, ...)
 	# Returns hclust object and plots the dendrogram of cluster relatedness based on nodes.
 	# Uses Jaccard coefficient to assign relatedness based on the number of shared nodes.
 	# x is a "linkcomm" object.
@@ -640,7 +640,7 @@ get.shared.nodes <- function(x, comms){
 	}
 
 
-meta.communities <- function(x, hcmethod = "ward", deepSplit = FALSE)
+meta.communities <- function(x, hcmethod = "ward.D", deepSplit = FALSE)
 	{
 	# x is a linkcomm or OCG object.
 

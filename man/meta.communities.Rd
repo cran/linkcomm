@@ -8,7 +8,7 @@ Produce a Set of Meta-Communities
 This function returns meta-communities by hierarchically clustering link communities based on their number of shared nodes.
 }
 \usage{
-meta.communities(x, hcmethod = "ward", deepSplit = FALSE)
+meta.communities(x, hcmethod = "ward.D", deepSplit = FALSE)
 }
 
 \arguments{
@@ -16,7 +16,7 @@ meta.communities(x, hcmethod = "ward", deepSplit = FALSE)
 An object of class \code{linkcomm} or \code{OCG}.
 }
   \item{hcmethod}{
-A character string naming the hierarchical clustering method to use. Can be one of \code{"ward"}, \code{"single"}, \code{"complete"}, \code{"average"}, \code{"mcquitty"}, \code{"median"}, or \code{"centroid"}. Defaults to \code{"ward"}.
+A character string naming the hierarchical clustering method to use. Can be one of \code{"ward.D"}, \code{"ward.D2"}, \code{"single"}, \code{"complete"}, \code{"average"}, \code{"mcquitty"}, \code{"median"}, or \code{"centroid"}. Defaults to \code{"ward.D"}.
 }
   \item{deepSplit}{
 Logical or integer value from 0 to 4 indicating how fine-grained the clusters should be with larger values giving increased cluster structure. Defaults to FALSE.
