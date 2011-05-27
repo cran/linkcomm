@@ -1,6 +1,15 @@
-# Function(s) to extract link communitites in undirected, unweighted networks so that we can cluster nodes, allowing them to belong to multiple different communities.
+# Function(s) to extract link communitites in directed, undirected, weighted, or unweighted networks so that we can cluster nodes, allowing them to belong to multiple different communities.
+#
 # Author: Alex T. Kalinka (alex.t.kalinka@gmail.com)
+#
 # See: Ahn et al. (2010). Link communities reveal multiscale complexity in networks. Nature 466:761-765.
+
+
+.onLoad <- function(lib, pkg) 
+	{
+	require(utils)
+	packageStartupMessage("\nWelcome to linkcomm version ",packageDescription(pkg)$Version,"\n\nFor a step-by-step guide to using linkcomm functions:\n   > vignette(topic = \"linkcomm\", package = \"linkcomm\")\nTo run an interactive demo:\n   > demo(topic = \"linkcomm\", package = \"linkcomm\")\nTo cite, see:\n   > citation(\"linkcomm\")\nNOTE: To use linkcomm, you require read and write permissions in the current directory (see: help(\"getwd\"), help(\"setwd\"))\n")
+	}
 
 
 .getLoopInds <- function(x) # Returns 1 if an edge is a loop, 2 otherwise. 
@@ -83,13 +92,20 @@ getLinkCommunities <- function(x, plot = TRUE, hcmethod = "average", edglim = 10
 
 	xx <- graph.edgelist(xx, directed = directed) # Creates "igraph" object.
 	edges <- cbind(xx[[3]],xx[[4]]) # Edges with numerical node IDs
-	
+
+	# Can we use carriage returns in our progress indicators?
+	if(.Platform$OS.type == "unix"){
+		carriageret <- TRUE
+	}else{
+		carriageret <- FALSE
+		}
+
 	# Switch depending on size of network.
 	if(len <= edglim){
 		disk <- FALSE
 		emptyvec <- rep(1,(len*(len-1))/2)
 		if(length(wt)>1){ weighted <- TRUE}else{ wt <- 0; weighted <- FALSE}
-		dissvec <- .C("getEdgeSimilarities",as.integer(edges[,1]),as.integer(edges[,2]),as.integer(len),rowlen=integer(1),weights=as.double(wt),as.logical(directed),as.double(dirweight),as.logical(weighted),as.logical(disk), dissvec = as.double(emptyvec))$dissvec
+		dissvec <- .C("getEdgeSimilarities",as.integer(edges[,1]),as.integer(edges[,2]),as.integer(len),rowlen=integer(1),weights=as.double(wt),as.logical(directed),as.double(dirweight),as.logical(weighted),as.logical(disk), dissvec = as.double(emptyvec), as.logical(carriageret))$dissvec
 		distmatrix <- matrix(1,len,len)
 		distmatrix[lower.tri(distmatrix)] <- dissvec
 		colnames(distmatrix) <- 1:len
@@ -104,10 +120,10 @@ getLinkCommunities <- function(x, plot = TRUE, hcmethod = "average", edglim = 10
 	}else{
 		disk <- TRUE
 		if(length(wt)>1){ weighted <- TRUE}else{ wt <- 0; weighted <- FALSE}
-		rowlen <- .C("getEdgeSimilarities",as.integer(edges[,1]),as.integer(edges[,2]),as.integer(len),rowlen=integer(len-1),weights=as.double(wt),as.logical(directed),as.double(dirweight),as.logical(weighted),as.logical(disk), dissvec = double(1))$rowlen
+		rowlen <- .C("getEdgeSimilarities",as.integer(edges[,1]),as.integer(edges[,2]),as.integer(len),rowlen=integer(len-1),weights=as.double(wt),as.logical(directed),as.double(dirweight),as.logical(weighted),as.logical(disk), dissvec = double(1), as.logical(carriageret))$rowlen
 		#return(rowlen)
 		cat("\n")
-		hcobj <- .C("hclustLinkComm",as.integer(len),as.integer(rowlen),heights = single(len-1),hca = integer(len-1),hcb = integer(len-1))
+		hcobj <- .C("hclustLinkComm",as.integer(len),as.integer(rowlen),heights = single(len-1),hca = integer(len-1),hcb = integer(len-1), as.logical(carriageret))
 		cat("\n")
 		hcedges<-list()
 		hcedges$merge <- cbind(hcobj$hca, hcobj$hcb)
@@ -123,7 +139,7 @@ getLinkCommunities <- function(x, plot = TRUE, hcmethod = "average", edglim = 10
 	hh <- unique(hcedges$height)
 	countClusters <- function(x,ht){return(length(which(ht==x)))}
 	clusnums <- sapply(hh, countClusters, ht = hcedges$height) # Number of clusters at each height.
-	ldlist <- .C("getLinkDensities",as.integer(hcedges$merge[,1]), as.integer(hcedges$merge[,2]), as.integer(edges[,1]), as.integer(edges[,2]), as.integer(len), as.integer(clusnums), pdens = double(length(hh)), heights = as.double(hh), pdmax = double(1), csize = integer(1), as.logical(removetrivial))
+	ldlist <- .C("getLinkDensities",as.integer(hcedges$merge[,1]), as.integer(hcedges$merge[,2]), as.integer(edges[,1]), as.integer(edges[,2]), as.integer(len), as.integer(clusnums), pdens = double(length(hh)), heights = as.double(hh), pdmax = double(1), csize = integer(1), as.logical(removetrivial), as.logical(carriageret))
 	pdens <- c(0,ldlist$pdens)
 	heights <- c(0,hh)
 	pdmax <- ldlist$pdmax

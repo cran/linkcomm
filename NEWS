@@ -1,0 +1,27 @@
+A revision history for the R package 'linkcomm'.
+
+Author: Alex T. Kalinka (alex.t.kalinka@gmail.com).
+
+
+linkcomm 1.0-2
+==============
+
+- Fixed Windows-specific bug that prevented progress indicators from working.
+
+- Included a start-up message about documentation, demos, and read-write directory permissions.
+
+- Added a note about bidirectional edges in directed networks to the documentation for "getLinkCommunities".
+
+
+
+linkcomm 1.0-1
+==============
+
+- Windows binaries released after fixing bugs related to file reading and writing.
+
+
+
+linkcomm 1.0-0
+==============
+
+- Function-complete version of linkcomm uploaded onto CRAN. 

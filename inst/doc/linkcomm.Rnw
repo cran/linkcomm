@@ -1,6 +1,6 @@
-%\VignetteIndexEntry{linkcomm}
+%\VignetteIndexEntry{A step-by-step guide to using linkcomm}
 %\VignetteDepends{grid, igraph, RColorBrewer}
-%\VignetteKeywords{linkcomm}
+%\VignetteKeyword{linkcomm}
 %\VignettePackage{linkcomm}
 
 \documentclass[a4paper, oneside, 10pt]{article}
@@ -45,7 +45,7 @@ The representation of systems of interacting elements as networks has brought fr
 
 This approach is greatly enhanced by clustering the links between nodes, rather than the nodes themselves \citep{evans&lambiotte2009, ahnetal2010}. With this method it is possible for nodes to belong to multiple communities, and this in turn reveals the overlapping and nested structure of the network while simultaneously identifying key nodes with membership across several communities.
 
-The R package {\tt linkcomm} implements the algorithm proposed by \cite{ahnetal2010}. Similarities between links that share a node are assigned using the Jaccard coefficient and these similarities are then used to hierarchically cluster the links. The resulting dendrogram is cut at a point that maximises the density of links within the clusters after normalizing against the maximum and minimum numbers of links possible in each cluster.
+The R package {\tt linkcomm} \citep{kalinka&tomancak2011} implements the algorithm proposed by \cite{ahnetal2010}. Similarities between links that share a node are assigned using the Jaccard coefficient and these similarities are then used to hierarchically cluster the links. The resulting dendrogram is cut at a point that maximises the density of links within the clusters after normalizing against the maximum and minimum numbers of links possible in each cluster.
 
 \section{Quick start}
 
@@ -269,7 +269,7 @@ C_{c}(i)=\sum_{i\in j}^{N}\left(1-\frac{1}{m}\sum_{i\in j\cap k}^{m}S(j,k)\right
 
 \noindent where the main sum is over the $N$ communities to which node $i$ belongs, and $S(j,k)$ refers to the similarity between community $j$ and $k$, calculated as the Jaccard coefficient for the number of shared nodes between each community pair, and this is averaged over the $m$ communities paired with community $j$ and in which node $i$ jointly belongs.
 
-Hence, nodes that belong to a lot of different communities will get the largest community centrality scores, whereas nodes that belong to overlapping or nested communities, or to few or no communities, will receive the lowest community centrality scores.\\
+Nodes that belong to a lot of different communities will get the largest community centrality scores, whereas nodes that belong to overlapping, nested or few communities will get the lowest scores.\\
 
 \noindent We can calculate this value for a set of nodes that have been assigned to link communities:
 
@@ -389,7 +389,7 @@ As a guide, a network with $10^{4}$ links will require $((10^{4})^{2})*8 = 800$ 
 
 \subsection{Exporting link communities to Cytoscape}
 
-Cytoscape is an open source platform for complex-network analysis and visualization \citep{clineetal2007}. We can export our link communities into an edge attribute file that can be imported into Cytoscape:
+Cytoscape is an open source platform for complex-network analysis and visualization \footnote{http://www.cytoscape.org/}. We can export our link communities into an edge attribute file that can be imported into Cytoscape:
 
 <<eval = FALSE>>=
 linkcomm2cytoscape(lc, interaction = "pp", ea = "linkcomms.ea")
@@ -401,17 +401,19 @@ This will save an edge attribute file to ``linkcomms.ea'' in the current directo
 
 \begin{thebibliography}{}
 
-\bibitem[Ahn {\it et~al}., 2010]{ahnetal2010} Ahn,Y.Y., Bagrow,J.P., and Lehmann,S. (2010) Link communities reveal multiscale complexity in networks, {\it Nature}, {\bf 466}, 761-764.
+\bibitem[Ahn {\it et al}., 2010]{ahnetal2010} Ahn, Y.Y., Bagrow, J.P., and Lehmann, S. (2010) Link communities reveal multiscale complexity in networks. {\it Nature}, {\bf 466}, 761-764.
 
-\bibitem[Cline {\it et~al}., 2007]{clineetal2007} Cline,M.S., \emph{et al}. (2007) Integration of biological networks and gene expression data using Cytoscape. {\it Nat Protoc}, {\bf 2}, 2366-2382.
+%\bibitem[Cline {\it et al}., 2007]{clineetal2007} Cline,M.S., \emph{et al}. (2007) Integration of biological networks and gene expression data using Cytoscape. {\it Nat Protoc}, {\bf 2}, 2366-2382.
 
-\bibitem[Evans and Lambiotte, 2009]{evans&lambiotte2009} Evans,T.S., and Lambiotte,R. (2009) Line graphs, link partitions and overlapping communities, {\it Phys. Rev. E.}, {\bf 80}, 016105.
+\bibitem[Evans and Lambiotte, 2009]{evans&lambiotte2009} Evans, T.S., and Lambiotte, R. (2009) Line graphs, link partitions and overlapping communities. {\it Phys. Rev. E.}, {\bf 80}, 016105.
 
-\bibitem[Radicchi {\it et~al}., 2004]{radicchietal2004} Raddichi,F., \emph{et al}. (2004) Defining and identifying communities in networks, {\it Proc. Natl Acad. Sci USA}, {\bf 101}, 2658-2663.
+\bibitem[Kalinka and Tomancak, 2011]{kalinka&tomancak2011} Kalinka, A.T., and Tomancak, P. (2011) linkcomm: an R package for the generation, visualization, and analysis of link communities in networks of arbitrary size and type. {\it Bioinformatics}, doi: 10.1093/bioinformatics/btr311.
 
-\bibitem[Spencer, 2010]{spencer2010} Spencer,R., (2010). http://scaledinnovation.com/analytics/communities/comlinks.html.
+\bibitem[Radicchi {\it et al}., 2004]{radicchietal2004} Raddichi, F., \emph{et al}. (2004) Defining and identifying communities in networks. {\it Proc. Natl Acad. Sci USA}, {\bf 101}, 2658-2663.
 
-\bibitem[Yu {\it et~al}., 2008]{yuetal2008} Yu,H., \emph{et al}. (2008) High-quality binary protein interaction map of the yeast interactome network, {\it Science}, {\bf 322}, 104-110.
+\bibitem[Spencer, 2010]{spencer2010} Spencer, R., (2010). http://scaledinnovation.com/analytics/communities/comlinks.html.
+
+\bibitem[Yu {\it et al}., 2008]{yuetal2008} Yu, H., \emph{et al}. (2008) High-quality binary protein interaction map of the yeast interactome network. {\it Science}, {\bf 322}, 104-110.
 
 
 

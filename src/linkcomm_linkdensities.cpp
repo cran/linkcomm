@@ -22,11 +22,12 @@ extern "C" {
 
 using namespace std;
 
-void getLinkDensities(int *ma, int *mb, int *ea, int *eb, int *numedg, int *clusnums, double *pdens, double *heights, double *pdmax, int *csize, bool *removetrivial)
+void getLinkDensities(int *ma, int *mb, int *ea, int *eb, int *numedg, int *clusnums, double *pdens, double *heights, double *pdmax, int *csize, bool *removetrivial, 
+			bool *carriageret)
 
 	{
 
-	int i, j, k, p = 0, ne, nn, count = 0, csum = clusnums[0];
+	int i, j, k, p = 0, ne, nn, count = 0, csum = clusnums[0], perc = 0;
 	float prog;
 	double ldens, maxp, best = 0;
 	vector<int> mergeA;
@@ -63,7 +64,21 @@ void getLinkDensities(int *ma, int *mb, int *ea, int *eb, int *numedg, int *clus
 	for(i = 0; i < *numedg-1; i++){
 		
 		prog = (i+0.0)/(*numedg-2)*100;
-		Rprintf("   Calculating link densities... %3.2f%\r",prog);
+
+		if(*carriageret){
+			Rprintf("   Calculating link densities... %3.2f%\r",prog);
+		}else{
+			if(i == 0){
+				Rprintf("   Calculating link densities...\r\n");
+				}
+			if(prog >= perc){
+				Rprintf("|");
+				perc++;
+				}
+			}
+
+		R_FlushConsole();
+		R_ProcessEvents();
 
 		if(mergeA.at(i) < 0 && mergeB.at(i) < 0){
 			clusters[i].push_back(-1*mergeA.at(i));

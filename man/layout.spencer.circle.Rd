@@ -35,6 +35,7 @@ A list with the following components:
 \item{anchors }{A numerical matrix with communities as rows and with 2 columns of x and y coordinates.}
 }
 \references{
+Kalinka, A.T. and Tomancak, P. (2011). linkcomm: an R package for the generation, visualization, and analysis of link communities in networks of arbitrary size and type. Bioinformatics, doi: 10.1093/bioinformatics/btr311.\cr
 Spencer, R. (2010). \url{http://scaledinnovation.com/analytics/communities/comlinks.html}
 }
 \author{

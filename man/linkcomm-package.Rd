@@ -22,6 +22,7 @@ Alex T. Kalinka \email{alex.t.kalinka@gmail.com}
 }
 \references{
 Ahn, Y.Y., Bagrow, J.P., and Lehmann, S. (2010). Link communities reveal multiscale complexity in networks. Nature 466, 761-764.\cr
+Kalinka, A.T. and Tomancak, P. (2011). linkcomm: an R package for the generation, visualization, and analysis of link communities in networks of arbitrary size and type. Bioinformatics, doi: 10.1093/bioinformatics/btr311.\cr
 Spencer, R. (2010). \url{http://scaledinnovation.com/analytics/communities/comlinks.html}
 }
 

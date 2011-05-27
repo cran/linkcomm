@@ -11,7 +11,7 @@ karate
 \format{Data frame with 2 columns.}
 \source{\url{http://wiki.gephi.org/index.php/Datasets}}
 \references{
-Zachary, W. W. (1977). An information flow model for conflict and fission in small groups, Journal of Anthropological Research 33, 452-473.
+Zachary, W. W. (1977). An information flow model for conflict and fission in small groups. Journal of Anthropological Research 33, 452-473.
 }
 \keyword{datasets}
 

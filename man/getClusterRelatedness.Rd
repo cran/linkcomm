@@ -63,7 +63,7 @@ Extracting meta-communities allows the user to explore community relatedness and
 Either a numerical vector (the upper triangular dissimilarity matrix - if \code{cluster = FALSE}), a list of integer vectors (the meta-communities - if \code{cutat} is not NULL), or an object of class \code{hclust} (if \code{cluster} is TRUE and \code{cutat} is NULL).
 }
 \references{
-%% ~put references to the literature/web site here ~
+Kalinka, A.T. and Tomancak, P. (2011). linkcomm: an R package for the generation, visualization, and analysis of link communities in networks of arbitrary size and type. Bioinformatics, doi: 10.1093/bioinformatics/btr311.
 }
 \author{
 Alex T. Kalinka \email{alex.t.kalinka@gmail.com}

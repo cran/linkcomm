@@ -23,11 +23,11 @@ extern "C" {
 
 using namespace std;
 
-void cutTreeAt(int *ma, int *mb, double *heights, double *cutat, int *csize, int *numM)
+void cutTreeAt(int *ma, int *mb, double *heights, double *cutat, int *csize, int *numM, bool *carriageret)
 
 	{
 
-	int i, j;
+	int i, j, perc = 0;
 	float prog;
 	vector<int> mergeA;
 	vector<int> mergeB;
@@ -52,7 +52,21 @@ void cutTreeAt(int *ma, int *mb, double *heights, double *cutat, int *csize, int
 	for(i = 0; i < mergeA.size(); i++){
 
 		prog = (i+0.0)/(mergeA.size()-1)*100;
-		Rprintf("   Extracting clusters... %3.2f%\r",prog);
+
+		if(*carriageret){
+			Rprintf("   Extracting clusters... %3.2f%\r",prog);
+		}else{
+			if(i == 0){
+				Rprintf("   Extracting clusters...\r\n");
+				}
+			if(prog >= perc){
+				Rprintf("|");
+				perc++;
+				}
+			}
+
+		R_FlushConsole();
+		R_ProcessEvents();
 		
 		if(mergeA.at(i) < 0 && mergeB.at(i) < 0){
 			clusters.push_back(vector<int>());
@@ -109,11 +123,11 @@ void cutTreeAt(int *ma, int *mb, double *heights, double *cutat, int *csize, int
 	}
 
 
-void getJaccards(int *nodes, int *clusters, int *clusids, int *numNodes, double *dissvec, bool *verbose)
+void getJaccards(int *nodes, int *clusters, int *clusids, int *numNodes, double *dissvec, bool *verbose, bool *carriageret)
 	
 	{
 
-	int i, j = 0, runn = 0;
+	int i, j = 0, runn = 0, perc = 0;
 	float prog;
 	set<int> tempNodes;
 	map<int, set<int> > clusMap;
@@ -126,7 +140,21 @@ void getJaccards(int *nodes, int *clusters, int *clusids, int *numNodes, double 
 		
 		if(*verbose){
 			prog = (i+0.0)/(*numNodes)*100;
-			Rprintf("   Calculating cluster similarities 1/2... %3.2f%\r",prog);
+
+			if(*carriageret){
+				Rprintf("   Calculating cluster similarities 1/2... %3.2f%\r",prog);
+			}else{
+				if(i == 0){
+					Rprintf("   Calculating cluster similarities 1/2...\r\n");
+					}
+				if(prog >= perc){
+					Rprintf("|");
+					perc++;
+					}
+				}
+
+			R_FlushConsole();
+			R_ProcessEvents();
 			}
 
 		if(clusters[i] == clusids[j]){
@@ -143,12 +171,28 @@ void getJaccards(int *nodes, int *clusters, int *clusids, int *numNodes, double 
 			}
 		}
 	
+	perc = 0;
+
 	// Loop through clusters and calculate Jaccards.
 	for(i = 0; i < clusMap.size()-1; i++){
 		
 		if(*verbose){
-			prog = (i+1.0)/(clusMap.size()-1)*100;
-			Rprintf("   Calculating cluster similarities 2/2... %3.2f%\r",prog);
+			prog = (i+0.0)/(*numNodes)*100;
+
+			if(*carriageret){
+				Rprintf("   Calculating cluster similarities 2/2... %3.2f%\r",prog);
+			}else{
+				if(i == 0){
+					Rprintf("   Calculating cluster similarities 2/2...\r\n");
+					}
+				if(prog >= perc){
+					Rprintf("|");
+					perc++;
+					}
+				}
+
+			R_FlushConsole();
+			R_ProcessEvents();
 			}
 
 		for(j = i+1; j < clusMap.size(); j++){

@@ -1,5 +1,7 @@
 # Miscellaneous functions for "linkcomm".
+#
 # Author: Alex T. Kalinka (alex.t.kalinka@gmail.com)
+#
 # See: Ahn et al. (2010). Link communities reveal multiscale complexity in networks. Nature 466:761-765.
 
 
@@ -317,7 +319,14 @@ getClusterRelatedness <- function(x, clusterids = 1:x$numbers[3], hcmethod = "wa
 
 	emptyvec <- rep(1,(length(clusterids)*(length(clusterids)-1))/2)
 
-	dissvec <- .C("getJaccards", as.integer(nodes), as.integer(clusters), as.integer(clusterids), as.integer(numN), dissvec = as.double(emptyvec), as.logical(verbose))$dissvec
+	# Can we use carriage returns in our progress indicators?
+	if(.Platform$OS.type == "unix"){
+		carriageret <- TRUE
+	}else{
+		carriageret <- FALSE
+		}
+
+	dissvec <- .C("getJaccards", as.integer(nodes), as.integer(clusters), as.integer(clusterids), as.integer(numN), dissvec = as.double(emptyvec), as.logical(verbose), as.logical(carriageret))$dissvec
 
 	if(cluster){
 		distmatrix <- matrix(1,length(clusterids),length(clusterids))
@@ -356,7 +365,15 @@ cutDendrogramAt <- function(x, lc = NULL, cutat = NULL, plot = TRUE, col = TRUE,
 	# x is an "hclust" object.
 	{
 	numM <- length(which(x$height <= cutat))
-	csize <- .C("cutTreeAt", as.integer(x$merge[1:numM,1]), as.integer(x$merge[1:numM,2]), as.double(x$height[1:numM]), as.double(cutat), csize = integer(1), as.integer(numM))$csize
+
+	# Can we use carriage returns in our progress indicators?
+	if(.Platform$OS.type == "unix"){
+		carriageret <- TRUE
+	}else{
+		carriageret <- FALSE
+		}
+
+	csize <- .C("cutTreeAt", as.integer(x$merge[1:numM,1]), as.integer(x$merge[1:numM,2]), as.double(x$height[1:numM]), as.double(cutat), csize = integer(1), as.integer(numM), as.logical(carriageret))$csize
 			
 	# Read in clusters from a file.
 	clus <- list()
@@ -406,7 +423,15 @@ newLinkCommsAt <- function(x, cutat = 0.5)
 	# x is a "linkcomm" object.
 	{
 	numM <- length(which(x$hclust$height <= cutat))
-	csize <- .C("cutTreeAt", as.integer(x$hclust$merge[1:numM,1]), as.integer(x$hclust$merge[1:numM,2]), as.double(x$hclust$height[1:numM]), as.double(cutat), csize = integer(1), as.integer(numM))$csize
+
+	# Can we use carriage returns in our progress indicators?
+	if(.Platform$OS.type == "unix"){
+		carriageret <- TRUE
+	}else{
+		carriageret <- FALSE
+		}
+
+	csize <- .C("cutTreeAt", as.integer(x$hclust$merge[1:numM,1]), as.integer(x$hclust$merge[1:numM,2]), as.double(x$hclust$height[1:numM]), as.double(cutat), csize = integer(1), as.integer(numM), as.logical(carriageret))$csize
 
 	if(csize == 0){
 		stop("\nThere are no clusters appearing at this height; maybe try a different height.\n")

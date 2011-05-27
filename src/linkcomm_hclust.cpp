@@ -77,10 +77,10 @@ void compressRow(vector<float> &v)
 	}
 
 
-void hclustLinkComm(int *numedg, int *rowlen, float *heights, int *hca, int *hcb)
+void hclustLinkComm(int *numedg, int *rowlen, float *heights, int *hca, int *hcb, bool *carriageret)
 	{
 	
-	int row, col, numM = 0, numedgU = *numedg;
+	int row, col, numM = 0, numedgU = *numedg, perc = 0;
 	float diff, best, min, prog, *arr;
 	vector<int> merges; // Edge pairs that are to be agglomerated.
 	vector<int> einds; // Edge indices to be updated as edges are deleted and new clusters added.
@@ -137,7 +137,21 @@ void hclustLinkComm(int *numedg, int *rowlen, float *heights, int *hca, int *hcb
 	while(numM < *numedg-1){
 		
 		prog = (numM+0.0)/(*numedg-2)*100;
-		Rprintf("   Hierarchical clustering of edges... %3.2f%\r",prog);
+
+		if(*carriageret){
+			Rprintf("   Hierarchical clustering of edges... %3.2f%\r",prog);
+		}else{
+			if(numM == 0){
+				Rprintf("   Hierarchical clustering of edges...\r\n");
+				}
+			if(prog >= perc){
+				Rprintf("|");
+				perc++;
+				}
+			}
+
+		R_FlushConsole();
+		R_ProcessEvents();
 
 		best = 2.0; k = 0;
 		row = 0; col = 0;

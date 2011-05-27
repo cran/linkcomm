@@ -157,11 +157,12 @@ void getDirectedWeights(map<int,float> &dW, set<int> &comm, vector<int> &eA, vec
 
 
 
-void getEdgeSimilarities(int *ea, int *eb, int *numedg, int *rowlen, double *weights, bool *directed, double *dirweight, bool *weighted, bool *disk, double *dissvec)
+void getEdgeSimilarities(int *ea, int *eb, int *numedg, int *rowlen, double *weights, bool *directed, double *dirweight, bool *weighted, bool *disk, double *dissvec, 
+				bool *carriageret)
 
 	{
 
-	int i, j, finda, findab, findb, findba, add, which;
+	int i, j, finda, findab, findb, findba, add, which, perc = 0;
 	int first = -1, last = -1, sum = 0, runn = 0;
 	double dotprod, absA, absB;
 	float prog;
@@ -209,7 +210,21 @@ void getEdgeSimilarities(int *ea, int *eb, int *numedg, int *rowlen, double *wei
 	for(i = 0; i < *numedg-1; i++){
 
 		prog = (i+0.0)/(*numedg-2)*100;
-		Rprintf("   Calculating edge similarities for %d edges... %3.2f%\r",*numedg,prog);
+
+		if(*carriageret){
+			Rprintf("   Calculating edge similarities for %d edges... %3.2f%\r",*numedg,prog);
+		}else{
+			if(i == 0){
+				Rprintf("   Calculating edge similarities for %d edges...\r\n",*numedg);
+				}
+			if(prog >= perc){
+				Rprintf("|");
+				perc++;
+				}
+			}
+
+		R_FlushConsole();
+		R_ProcessEvents();
 
 		row.assign(*numedg-1-i, 1);
 		end = FALSE; j = 0;

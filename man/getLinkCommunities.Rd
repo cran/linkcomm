@@ -59,13 +59,15 @@ An object of class \code{linkcomm}, which is a list containing the following com
 \item{edgelist }{A character matrix with 2 columns containing the nodes that interact with each other.}
 }
 \references{
-Ahn, Y.Y., Bagrow, J.P., and Lehmann, S. (2010). Link communities reveal multiscale complexity in networks. Nature 466:761-764.
+Ahn, Y.Y., Bagrow, J.P., and Lehmann, S. (2010). Link communities reveal multiscale complexity in networks. Nature 466:761-764.\cr
+Kalinka, A.T. and Tomancak, P. (2011). linkcomm: an R package for the generation, visualization, and analysis of link communities in networks of arbitrary size and type. Bioinformatics, doi: 10.1093/bioinformatics/btr311.
 }
 \author{
 Alex T. Kalinka \email{alex.t.kalinka@gmail.com}
 }
 \note{
-When the number of links is less than \code{edglim} the hierarchical clustering will be handled in memory. Above this value the upper triangular dissimilarity matrix will be compressed and written to disk and read and written as clustering proceeds until the file size is 0 bytes using a compiled C++ function. In this case the hierarchical clustering method will always be \dQuote{single} to enhance performance for large networks. The size of \code{edglim} can be modified to suit the computer resources available to the user. As a guide, a network with \eqn{10^{4}} links will require \eqn{((10^{4})^{2})*8 = 800} MB to be handled in an uncompressed format in the memory.
+When the number of links is less than \code{edglim} the hierarchical clustering will be handled in memory. Above this value the upper triangular dissimilarity matrix will be compressed and written to disk and read and written as clustering proceeds until the file size is 0 bytes using a compiled C++ function. In this case the hierarchical clustering method will always be \code{"single"} to enhance performance for large networks. The size of \code{edglim} can be modified to suit the computer resources available to the user. As a guide, a network with \eqn{10^{4}} links will require \eqn{((10^{4})^{2})*8 = 800} MB to be handled in an uncompressed format in the memory.\cr\cr
+For directed networks, a pair of bidirectional interactions between two nodes cannot be assigned similarities and the edge that appears lower in the edge list for the network will be discarded.
 }
 
 \seealso{
