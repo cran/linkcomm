@@ -1,12 +1,11 @@
-e7f40eeed0b507015bef8f857d97643f *DESCRIPTION
+af2af62070da091c95e4f369968b48f6 *DESCRIPTION
 2f8e5074499d1dd08e8c3512d98d8f86 *NAMESPACE
-84529365a58f88cbc80f7e291fa33428 *NEWS
+2afd57c50aa580a298693df03f326a3c *NEWS
 fd660cc9b8e98cde4d8ed751793e9d36 *R/OCG_main.R
 9d4fc18dd383216c3f05f7b829acf8fb *R/linkcomm_main.R
 eadf8a3f9830c48162cadf9afd5f5d14 *R/linkcomm_misc.R
 b0cc69153639df08bbded48e8c60624b *R/linkcomm_plotting.R
-e7af6ee1d01a1c0aa2ec2cc1f4e9c545 *README.md
-f9e0dddd6b19c16a4da42f9be06b81c8 *build/vignette.rds
+7ef72cec8f1cfa5012f9e3802e06f239 *build/vignette.rds
 d20294a92ed4b3ce710c71052420c10e *data/networks.rda
 afb6e3ed14cdbe738d511af176dab96e *demo/00Index
 31d7f68d1d8ed25b11179df24922f77e *demo/linkcomm.R
